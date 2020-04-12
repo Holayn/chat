@@ -11,5 +11,5 @@ server.listen(PORT, () => {
   console.log('server listening on 8000');
 });
 
-server.use('/session', session);
-server.use('/chat', chat);
+server.use('/sessions', session);
+server.use('/chats', chat);

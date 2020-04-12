@@ -1,9 +1,9 @@
 import express from 'express';
-import client from '../client';
+import query from '../db/query';
 
 const router = express.Router();
 
-router.get('/chats', (req: any, res: any) => {
+router.get('/', async (req: any, res: any) => {
   const params = {
     TableName: 'chat',
     KeyConditionExpression: '#s = :s',
@@ -15,15 +15,12 @@ router.get('/chats', (req: any, res: any) => {
     }
   };
 
-  client.query(params, (err, data) => {
-    if (err) {
-      console.error(err);
-      res.sendStatus(500);
-      return;
-    }
-    console.log(data);
-    res.send(data);
-  });
+  try {
+    res.send(await query(params));
+  } catch (e) {
+    console.error(e);
+    res.sendStatus(500);
+  }
 });
 
 export default router;

@@ -18,12 +18,34 @@ server.listen(PORT, function () {
 });
 server.get('/sessions', function (req, res) {
     var params = {
-        TableName: "session",
+        TableName: 'session',
     };
     docClient.scan(params, function (err, data) {
         if (err) {
             console.error(err);
             res.send(500);
+            return;
+        }
+        console.log(data);
+        res.send(data);
+    });
+});
+server.get('/chats', function (req, res) {
+    var params = {
+        TableName: 'chat',
+        KeyConditionExpression: '#s = :s',
+        ExpressionAttributeValues: {
+            ':s': "" + req.query.session_id,
+        },
+        ExpressionAttributeNames: {
+            '#s': 'session-id'
+        }
+    };
+    docClient.query(params, function (err, data) {
+        if (err) {
+            console.error(err);
+            res.sendStatus(500);
+            return;
         }
         console.log(data);
         res.send(data);

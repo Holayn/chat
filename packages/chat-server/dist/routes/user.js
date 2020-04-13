@@ -40,9 +40,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = __importDefault(require("express"));
-var uuid_1 = require("uuid");
-var query_1 = __importDefault(require("../db/query"));
-var put_1 = __importDefault(require("../db/put"));
+var get_1 = __importDefault(require("../db/get"));
 var router = express_1.default.Router();
 router.get('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var params, _a, _b, e_1;
@@ -50,20 +48,16 @@ router.get('/', function (req, res) { return __awaiter(void 0, void 0, void 0, f
         switch (_c.label) {
             case 0:
                 params = {
-                    TableName: 'session',
-                    KeyConditionExpression: '#s = :s',
-                    ExpressionAttributeValues: {
-                        ':s': "" + req.query.session_id,
-                    },
-                    ExpressionAttributeNames: {
-                        '#s': 'session-id'
+                    TableName: 'user',
+                    Key: {
+                        'user-id': "" + req.query.user_id
                     }
                 };
                 _c.label = 1;
             case 1:
                 _c.trys.push([1, 3, , 4]);
                 _b = (_a = res).send;
-                return [4 /*yield*/, query_1.default(params)];
+                return [4 /*yield*/, get_1.default(params)];
             case 2:
                 _b.apply(_a, [_c.sent()]);
                 return [3 /*break*/, 4];
@@ -76,42 +70,4 @@ router.get('/', function (req, res) { return __awaiter(void 0, void 0, void 0, f
         }
     });
 }); });
-router.post('/new', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var e_2;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                if (!req.query.user_id_1 || !req.query.user_id_2) {
-                    return [2 /*return*/];
-                }
-                _a.label = 1;
-            case 1:
-                _a.trys.push([1, 4, , 5]);
-                return [4 /*yield*/, put_1.default(newSessionParams(req.query.user_id_1))];
-            case 2:
-                _a.sent();
-                return [4 /*yield*/, put_1.default(newSessionParams(req.query.user_id_2))];
-            case 3:
-                _a.sent();
-                res.send('success');
-                return [3 /*break*/, 5];
-            case 4:
-                e_2 = _a.sent();
-                console.error(e_2);
-                res.sendStatus(500);
-                return [3 /*break*/, 5];
-            case 5: return [2 /*return*/];
-        }
-    });
-}); });
-function newSessionParams(user) {
-    return {
-        TableName: 'session',
-        Item: {
-            'session-id': uuid_1.v4(),
-            'user-id': user,
-            'type': 'regular',
-        }
-    };
-}
 exports.default = router;

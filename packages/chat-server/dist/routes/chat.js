@@ -40,7 +40,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = __importDefault(require("express"));
+var uuid_1 = require("uuid");
 var query_1 = __importDefault(require("../db/query"));
+var put_1 = __importDefault(require("../db/put"));
 var router = express_1.default.Router();
 router.get('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var params, _a, _b, e_1;
@@ -74,4 +76,41 @@ router.get('/', function (req, res) { return __awaiter(void 0, void 0, void 0, f
         }
     });
 }); });
+router.post('/new', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var e_2;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!req.query.session_id || !req.query.message) {
+                    return [2 /*return*/];
+                }
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, put_1.default(newSessionParams(req.query.session_id, req.query.message))];
+            case 2:
+                _a.sent();
+                res.send('success');
+                return [3 /*break*/, 4];
+            case 3:
+                e_2 = _a.sent();
+                console.error(e_2);
+                res.sendStatus(500);
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+function newSessionParams(sessionId, message) {
+    return {
+        TableName: 'chat',
+        Item: {
+            'session-id': sessionId,
+            'chat-id': uuid_1.v4(),
+            'message': message,
+            'timestamp': Date.now(),
+            'type': 'text',
+        }
+    };
+}
 exports.default = router;

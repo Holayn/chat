@@ -31,7 +31,7 @@ router.post('/new', async (req: any, res: any) => {
     return;
   }
   try {
-    await put(newSessionParams(req.query.session_id, req.query.message));
+    await put(newChatParams(req.query.session_id, req.query.message));
     res.send('success');
   } catch (e) {
     console.error(e);
@@ -39,7 +39,7 @@ router.post('/new', async (req: any, res: any) => {
   }
 });
 
-function newSessionParams(sessionId: string, message: string) {
+function newChatParams(sessionId: string, message: string) {
   return {
     TableName: 'chat',
     Item: {

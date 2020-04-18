@@ -41,9 +41,43 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = __importDefault(require("express"));
 var get_1 = __importDefault(require("../db/get"));
+var query_1 = __importDefault(require("../db/query"));
 var router = express_1.default.Router();
-router.get('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+router.get('/sessions', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var params, _a, _b, e_1;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                params = {
+                    TableName: 'session',
+                    IndexName: 'user-id-index',
+                    KeyConditionExpression: '#u = :u',
+                    ExpressionAttributeValues: {
+                        ':u': "" + req.query.user_id,
+                    },
+                    ExpressionAttributeNames: {
+                        '#u': 'user-id'
+                    }
+                };
+                _c.label = 1;
+            case 1:
+                _c.trys.push([1, 3, , 4]);
+                _b = (_a = res).send;
+                return [4 /*yield*/, query_1.default(params)];
+            case 2:
+                _b.apply(_a, [_c.sent()]);
+                return [3 /*break*/, 4];
+            case 3:
+                e_1 = _c.sent();
+                console.error(e_1);
+                res.sendStatus(500);
+                return [3 /*break*/, 4];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); });
+router.get('/', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var params, _a, _b, e_2;
     return __generator(this, function (_c) {
         switch (_c.label) {
             case 0:
@@ -62,8 +96,8 @@ router.get('/', function (req, res) { return __awaiter(void 0, void 0, void 0, f
                 _b.apply(_a, [_c.sent()]);
                 return [3 /*break*/, 4];
             case 3:
-                e_1 = _c.sent();
-                console.error(e_1);
+                e_2 = _c.sent();
+                console.error(e_2);
                 res.sendStatus(500);
                 return [3 /*break*/, 4];
             case 4: return [2 /*return*/];

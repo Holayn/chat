@@ -2,9 +2,37 @@
 <html>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
   <script>
-    const socket = io.connect('http://localhost:8000?test=hi');
-    socket.on('ack', (data) => {
-      console.log(data);
-    });
+    let socket;
+    async function connect() {
+      socket = io.connect(`http://localhost:8000?user_id=${document.getElementById('user').value}`);
+      socket.on('ack', (data) => {
+        console.log(data);
+      });
+
+      socket.on('chat', (data) => {
+        console.log(data);
+      });
+
+      const sessions = await fetch(`http://localhost:8000/users/sessions?user_id=${document.getElementById('user').value}`);
+      console.log(sessions);
+    }
+
+    function send() {
+      socket.emit('chat', {
+        message: document.getElementById('message').value,
+        session: document.getElementById('session').value,
+      });
+    }
   </script>
+  <body>
+    user 
+    <input id="user">
+    <button onclick="connect()">connect</button>
+    <hr>
+    text
+    <input id="message" type="text">
+    session
+    <input id="session" type="text">
+    <button onclick="send()">send</button>
+  </body>
 </html>

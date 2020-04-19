@@ -1,7 +1,6 @@
 import express from 'express';
 
 import query from '../db/query';
-import put from '../db/put';
 import { newChat } from '../shared/chat';
 
 const router = express.Router();
@@ -28,7 +27,7 @@ router.get('/', async (req: any, res: any) => {
 
 router.post('/new', async (req: any, res: any) => {
   if (!req.query.session_id || !req.query.message) {
-    return;
+    res.sendStatus(422);
   }
   try {
     await newChat(req.query.session_id, req.query.message);

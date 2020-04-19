@@ -1,0 +1,299 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Sample API",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000"
+    }
+  ],
+  "paths": {
+    "/users/sessions": {
+      "get": {
+        "summary": "Returns a list sessions belonging to a user",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "user_id",
+            "required": true,
+            "description": "user id"
+          }
+        ],
+        "tags": [
+          "User"
+        ],
+        "responses": {
+          "200": {
+            "description": "See example value",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "Items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "session-id": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string"
+                          },
+                          "user-id": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "summary": "Returns info for a user",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "user_id",
+            "required": true,
+            "description": "user id"
+          }
+        ],
+        "tags": [
+          "User" 
+        ],
+        "responses": {
+          "200": {
+            "description": "See example value",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "Item": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "username": {
+                          "type": "string"
+                        },
+                        "user-id": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chats": {
+      "get": {
+        "summary": "Returns a list of chats in a session",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "session_id",
+            "required": true,
+            "description": "session id"
+          }
+        ],
+        "tags": [
+          "Chat"
+        ],
+        "responses": {
+          "200": {
+            "description": "See example value",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "Items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "session-id": {
+                            "type": "string"
+                          },
+                          "chat-id": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string"
+                          },
+                          "message": {
+                            "type": "string"
+                          },
+                          "timestamp": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chats/new": {
+      "post": {
+        "summary": "Creates a new chat item for the session",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "session_id",
+            "required": true,
+            "description": "session id"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "message",
+            "required": true,
+            "description": "message"
+          }
+        ],
+        "tags": [
+          "Chat"
+        ],
+        "responses": {
+          "200": {
+            "description": "See example value",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sessions": {
+      "get": {
+        "summary": "Returns all the session items given a session",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "session_id",
+            "required": true,
+            "description": "session id"
+          }
+        ],
+        "tags": [
+          "Session"
+        ],
+        "responses": {
+          "200": {
+            "description": "See example value",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "Items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "session-id": {
+                            "type": "string"
+                          },
+                          "user-id": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sessions/new": {
+      "post": {
+        "summary": "Creates new session items for the two users",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "user_id_1",
+            "required": true,
+            "description": "user id 1"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "user_id_2",
+            "required": true,
+            "description": "user id 2"
+          }
+        ],
+        "tags": [
+          "Session"
+        ],
+        "responses": {
+          "200": {
+            "description": "See example value",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

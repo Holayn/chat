@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import * as sockets from 'socket.io';
+import swagger from 'swagger-ui-express';
 
 import logger from './utils/logger';
 import {sockets as socketsHandler} from './sockets/index';
@@ -16,6 +17,7 @@ const app = express();
 
 app.use(logger);
 app.use(cors());
+app.use('/api-docs', swagger.serve, swagger.setup(require('../swagger.json')));
 
 app.use('/sessions', session);
 app.use('/chats', chat);

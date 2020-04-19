@@ -1,0 +1,9 @@
+- keep track of users connected to server
+  - a user needs to pass their user id as a query arg when connecting
+- sending a chat normally involves adding an item to the chat table by session-id
+  - if the receiving user is connected, emit a message on their socket
+    - contain message, session-id
+  - how to know if a user is connected that has a session with that id?
+    - could have "active sessions" i.e. if both users are connected, then the session is active
+      - but there could be a lot of active sessions
+    - could look up that session-id, and for every user-id excluding the sender's user-id, lookup in connected users and if they're present, then send to their socket

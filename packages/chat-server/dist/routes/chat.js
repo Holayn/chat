@@ -87,7 +87,7 @@ router.post('/new', function (req, res) { return __awaiter(void 0, void 0, void 
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, put_1.default(newSessionParams(req.query.session_id, req.query.message))];
+                return [4 /*yield*/, put_1.default(newChatParams(req.query.session_id, req.query.message))];
             case 2:
                 _a.sent();
                 res.send('success');
@@ -101,7 +101,7 @@ router.post('/new', function (req, res) { return __awaiter(void 0, void 0, void 
         }
     });
 }); });
-function newSessionParams(sessionId, message) {
+function newChatParams(sessionId, message) {
     return {
         TableName: 'chat',
         Item: {

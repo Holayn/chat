@@ -12,6 +12,19 @@ const PORT = process.env.PORT || 8000;
 
 const app = express();
 
+interface IConnectedUsers {
+  [key:string]: sockets.Socket;
+}
+
+interface IConnectedSockets {
+  [key:string]: User;
+}
+
+type User = string;
+
+const connectedUsers: IConnectedUsers = {};
+const connectedSockets: IConnectedSockets = {};
+
 app.use(logger);
 
 app.use('/sessions', session);
@@ -23,7 +36,14 @@ const server = app.listen(PORT, () => {
 });
 
 const io = sockets.listen(server);
-io.on('connection', function (socket) {
+io.on('connection', function(socket) {
   console.log('client connected');
+  console.log(socket.handshake.query);
+
+  const userId = socket.handshake.query.userId;
   socket.emit('ack', { msg: 'connected to server' });
 });
+
+// io.on('disconnect', function(socket) {
+  
+// })

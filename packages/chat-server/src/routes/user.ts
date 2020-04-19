@@ -13,9 +13,9 @@ router.get('/sessions', async (req: any, res: any) => {
       ':u': `${req.query.user_id}`,
     },
     ExpressionAttributeNames: {
-      '#u': 'user-id'
-    }
-  }
+      '#u': 'user-id',
+    },
+  };
 
   try {
     res.send(await query(params));
@@ -29,9 +29,9 @@ router.get('/', async (req: any, res: any) => {
   const params = {
     TableName: 'user',
     Key: {
-      'user-id': `${req.query.user_id}`
-    }
-  }
+      'user-id': `${req.query.user_id}`,
+    },
+  };
 
   try {
     res.send(await get(params));

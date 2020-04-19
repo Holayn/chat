@@ -8,9 +8,9 @@ export function getSessions(sessionId: string) {
       ':s': `${sessionId}`,
     },
     ExpressionAttributeNames: {
-      '#s': 'session-id'
-    }
-  }
+      '#s': 'session-id',
+    },
+  };
 
   return query(params);
 }

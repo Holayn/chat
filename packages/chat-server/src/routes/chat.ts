@@ -2,7 +2,7 @@ import express from 'express';
 
 import query from '../db/query';
 import put from '../db/put';
-import {newChat} from '../shared/chat';
+import { newChat } from '../shared/chat';
 
 const router = express.Router();
 
@@ -14,8 +14,8 @@ router.get('/', async (req: any, res: any) => {
       ':s': `${req.query.session_id}`,
     },
     ExpressionAttributeNames: {
-      '#s': 'session-id'
-    }
+      '#s': 'session-id',
+    },
   };
 
   try {

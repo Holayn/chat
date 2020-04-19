@@ -2,7 +2,7 @@ import client from '../client';
 
 export default (params: any) => {
   return new Promise((resolve, reject) => {
-    client.put(params, (err, data) => {
+    client.put(params, (err: any, data: any) => {
       if (err) {
         console.error(err);
         reject(err);
@@ -10,4 +10,4 @@ export default (params: any) => {
       resolve(data);
     });
   });
-}
+};

@@ -1,8 +1,8 @@
 import express from 'express';
-import {v4} from 'uuid';
+import { v4 } from 'uuid';
 
 import put from '../db/put';
-import {getSessions} from '../shared/session';
+import { getSessions } from '../shared/session';
 
 const router = express.Router();
 
@@ -35,9 +35,9 @@ function newSessionParams(user: string) {
     Item: {
       'session-id': v4(), // generate a unique session id
       'user-id': user,
-      'type': 'regular',
-    }
-  }
+      type: 'regular',
+    },
+  };
 }
 
 export default router;

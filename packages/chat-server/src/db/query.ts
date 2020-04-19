@@ -1,10 +1,10 @@
-import aws from 'aws-sdk';
+import awsSdk from 'aws-sdk';
 
 import client from '../client';
 
 export default (params: any) => {
-  return new Promise<aws.DynamoDB.DocumentClient.QueryOutput>((resolve, reject) => {
-    client.query(params, (err, data) => {
+  return new Promise<awsSdk.DynamoDB.DocumentClient.QueryOutput>((resolve, reject) => {
+    client.query(params, (err: any, data: any) => {
       if (err) {
         console.error(err);
         reject(err);
@@ -12,4 +12,4 @@ export default (params: any) => {
       resolve(data);
     });
   });
-}
+};

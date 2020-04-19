@@ -12,7 +12,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "lint": "tslint",
+    "lint": "tslint --fix -p tsconfig.json",
     "start": "node ./dist/index.js"
   },
   "dependencies": {

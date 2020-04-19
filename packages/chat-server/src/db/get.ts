@@ -10,4 +10,4 @@ export default (params: any) => {
       resolve(data);
     });
   });
-}
+};

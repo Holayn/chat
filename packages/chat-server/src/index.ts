@@ -1,5 +1,6 @@
 import express from 'express';
 import * as sockets from 'socket.io';
+import cors from 'cors';
 
 import logger from './utils/logger';
 
@@ -7,6 +8,13 @@ import logger from './utils/logger';
 import session from './routes/session';
 import chat from './routes/chat';
 import user from './routes/user';
+
+// operation
+import {newChat} from './shared/chat';
+import {getSessions} from './shared/session';
+
+// interfaces
+import aws from 'aws-sdk';
 
 const PORT = process.env.PORT || 8000;
 
@@ -22,10 +30,11 @@ interface IConnectedSockets {
 
 type User = string;
 
-const connectedUsers: IConnectedUsers = {};
-const connectedSockets: IConnectedSockets = {};
+const connectedUsers: IConnectedUsers = {}; // access socket object that corresponds to a connected user
+const connectedSockets: IConnectedSockets = {}; // access user that socket corresponds to
 
 app.use(logger);
+app.use(cors());
 
 app.use('/sessions', session);
 app.use('/chats', chat);
@@ -37,13 +46,45 @@ const server = app.listen(PORT, () => {
 
 const io = sockets.listen(server);
 io.on('connection', function(socket) {
-  console.log('client connected');
-  console.log(socket.handshake.query);
+  const userId = socket.handshake.query.user_id;
+  connectedSockets[socket.id] = userId;
+  connectedUsers[userId] = socket;
 
-  const userId = socket.handshake.query.userId;
+  console.log(`user ${userId} connected`);
+
   socket.emit('ack', { msg: 'connected to server' });
+
+  socket.on('chat', async ({message, session}) => {
+    // add message to database
+    await newChat(session, message);
+    // send to connected user if they are connected
+    const users: aws.DynamoDB.DocumentClient.QueryOutput = await getSessions(session);
+    users.Items?.forEach((item: Record<string, any>) => {
+      const socket = connectedUsers[item['user-id']];
+      if (socket) {
+        socket.emit('chat', {
+          message,
+          session
+        });
+      }
+    })
+  });
+
+  socket.on('disconnect', () => {
+    const disconnectedUserId = connectedSockets[socket.id];
+    delete connectedUsers[disconnectedUserId];
+    delete connectedSockets[socket.id];
+    console.log(`user ${disconnectedUserId} disconnected`);
+  });
 });
 
-// io.on('disconnect', function(socket) {
-  
-// })
+(function logConnections() {
+  setTimeout(() => {
+    console.log('Connected sockets:');
+    console.log(connectedSockets);
+    console.log('Connected users:');
+    console.log(Object.keys(connectedUsers));
+    logConnections();
+  }, 1000);
+})();
+

@@ -1,8 +1,8 @@
 import express from 'express';
-import {v4} from 'uuid';
 
 import query from '../db/query';
 import put from '../db/put';
+import {newChat} from '../shared/chat';
 
 const router = express.Router();
 
@@ -31,25 +31,12 @@ router.post('/new', async (req: any, res: any) => {
     return;
   }
   try {
-    await put(newChatParams(req.query.session_id, req.query.message));
+    await newChat(req.query.session_id, req.query.message);
     res.send('success');
   } catch (e) {
     console.error(e);
     res.sendStatus(500);
   }
 });
-
-function newChatParams(sessionId: string, message: string) {
-  return {
-    TableName: 'chat',
-    Item: {
-      'session-id': sessionId, // generate a unique session id
-      'chat-id': v4(),
-      'message': message,
-      'timestamp': Date.now(),
-      'type': 'text',
-    }
-  }
-}
 
 export default router;

@@ -1,25 +1,14 @@
 import express from 'express';
 import {v4} from 'uuid';
 
-import query from '../db/query';
 import put from '../db/put';
+import {getSessions} from '../shared/session';
 
 const router = express.Router();
 
 router.get('/', async (req: any, res: any) => {
-  const params = {
-    TableName: 'session',
-    KeyConditionExpression: '#s = :s',
-    ExpressionAttributeValues: {
-      ':s': `${req.query.session_id}`,
-    },
-    ExpressionAttributeNames: {
-      '#s': 'session-id'
-    }
-  }
-
   try {
-    res.send(await query(params));
+    res.send(await getSessions(req.query.session_id));
   } catch (e) {
     console.error(e);
     res.sendStatus(500);

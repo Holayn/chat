@@ -20,20 +20,21 @@ router.post('/new', async (req: any, res: any) => {
     return;
   }
   try {
-    await put(newSessionParams(req.query.user_id_1));
-    await put(newSessionParams(req.query.user_id_2));
-    res.send('success');
+    const sessionId = v4();
+    await put(newSessionParams(sessionId, req.query.user_id_1));
+    await put(newSessionParams(sessionId, req.query.user_id_2));
+    res.send({"session-id": sessionId});
   } catch (e) {
     console.error(e);
     res.sendStatus(500);
   }
 });
 
-function newSessionParams(user: string) {
+function newSessionParams(sessionId: string, user: string) {
   return {
     TableName: 'session',
     Item: {
-      'session-id': v4(), // generate a unique session id
+      'session-id': sessionId, // generate a unique session id
       'user-id': user,
       type: 'regular',
     },

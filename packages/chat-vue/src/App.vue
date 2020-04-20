@@ -1,5 +1,8 @@
 <template>
   <div id="app">
+    <input v-model="user">
+    <button @click="login()">Login</button>
+    <hr>
     <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link>
@@ -7,6 +10,23 @@
     <router-view/>
   </div>
 </template>
+
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator';
+
+@Component({
+  components: {},
+})
+
+export default class App extends Vue {
+  private user: any = '';
+
+  private login() {
+    this.$store.dispatch('setUser', {user: this.user});
+  }
+}
+
+</script>
 
 <style lang="scss">
 #app {

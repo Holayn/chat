@@ -5,7 +5,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    user: '',
+    user: {},
   },
   mutations: {
     user(state, payload) {
@@ -13,8 +13,8 @@ export default new Vuex.Store({
     },
   },
   actions: {
-    setUser({commit}, user: string) {
-      commit('user', user);
+    setUser({commit}, userInfo: any) {
+      commit('user', userInfo);
     },
   },
 });

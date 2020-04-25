@@ -41,4 +41,25 @@ router.get('/', async (req: any, res: any) => {
   }
 });
 
+router.get('/findByUsername', async (req: any, res: any) => {
+  const params = {
+    TableName: 'user',
+    IndexName:'username-index',
+    KeyConditionExpression: '#u = :u',
+    ExpressionAttributeValues: {
+      ':u': `${req.query.username}`,
+    },
+    ExpressionAttributeNames: {
+      '#u': 'username',
+    },
+  };
+
+  try {
+    res.send(await query(params));
+  } catch (e) {
+    console.error(e);
+    res.sendStatus(500);
+  }
+});
+
 export default router;

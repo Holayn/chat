@@ -1,9 +1,16 @@
 <template>
   <div>
     <h1>Messages</h1>
-    <div>
-      <div v-for="(session, i) in sessions" :key="i">
-        {{session['session-id']}} with users: {{session.users}}
+    <div class="messages">
+      <div class="sessions-section">
+        <div class="session-card" v-for="(session, i) in sessions" :key="i" @click="selectSession($event.target.innerText)">
+          <span>
+            {{displayUsers(session)}}
+          </span>
+        </div>
+      </div>
+      <div class="chat-section">
+        hello there
       </div>
     </div>
   </div>
@@ -14,10 +21,19 @@ import { Component, Vue } from 'vue-property-decorator';
 
 @Component({})
 export default class extends Vue {
-  public sessions: any = [];
+  private sessions: any[] = [];
+  private selectedSession: string = '';
 
   get user() {
     return this.$store.getters.user;
+  }
+
+  private selectSession(session: string) {
+    this.selectedSession = session;
+  }
+
+  private displayUsers(session: any) {
+    return session.users.join();
   }
 
   private created() {
@@ -34,3 +50,33 @@ export default class extends Vue {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+  .messages {
+    display: flex;
+  }
+  .session-card {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .selected {
+      background-color: lightblue;
+    }
+  }
+  .session-card:nth-child(even) {
+    background-color: white;
+  }
+  .session-card:nth-child(odd) {
+    background-color: whitesmoke;
+  }
+
+  .sessions-section {
+    flex: auto;
+  }
+
+  .chat-section {
+    flex-grow: 6;
+  }
+</style>

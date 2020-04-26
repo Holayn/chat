@@ -3,33 +3,41 @@
     <h1>Messages</h1>
     <div class="messages">
       <div class="sessions-section">
-        <div class="session-card" v-for="(session, i) in sessions" :key="i" @click="selectSession($event.target.innerText)">
+        <div class="session-card" v-for="(session, i) in sessions" :key="i" @click="selectSession(session)">
           <span>
             {{displayUsers(session)}}
           </span>
         </div>
       </div>
       <div class="chat-section">
-        hello there
+        <div class="chat-card" v-for="(chat, i) in chats" :key="i">
+          {{chat}}
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Watch } from 'vue-property-decorator';
 
 @Component({})
 export default class extends Vue {
   private sessions: any[] = [];
+  private chats: any[] = [];
   private selectedSession: string = '';
+
+  @Watch('selectedSession')
+  private onSessionChange() {
+    this.getChats(this.selectedSession);
+  }
 
   get user() {
     return this.$store.getters.user;
   }
 
-  private selectSession(session: string) {
-    this.selectedSession = session;
+  private selectSession(session: any) {
+    this.selectedSession = session['session-id'];
   }
 
   private displayUsers(session: any) {
@@ -47,6 +55,11 @@ export default class extends Vue {
   private async getSessions() {
     const res = await fetch(`http://localhost:8000/users/sessions?user_id=${this.user.userId}`);
     this.sessions = await res.json();
+  }
+
+  private async getChats(selectedSession: string) {
+    const res = await fetch(`http://localhost:8000/chats?session_id=${selectedSession}`);
+    this.chats = await res.json();
   }
 }
 </script>
@@ -73,10 +86,12 @@ export default class extends Vue {
   }
 
   .sessions-section {
-    flex: auto;
+    // flex: auto;
+    width: 15%;
   }
 
   .chat-section {
-    flex-grow: 6;
+    // flex-grow: 6;
+    width: 85%;
   }
 </style>

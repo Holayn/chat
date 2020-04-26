@@ -28,7 +28,7 @@ export function sockets(io: any) {
   
     socket.on('chat', async ({ message, session }: {message: string, session: string}) => {
       // add message to database
-      await newChat(session, message);
+      await newChat(session, message, userId);
       // send to connected user if they are connected
       const users: awsSdk.DynamoDB.DocumentClient.QueryOutput = await getSessions(session);
       users.Items?.forEach((item: Record<string, any>) => {

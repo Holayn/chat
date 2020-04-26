@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get('/', async (req: any, res: any) => {
   const params = {
-    TableName: 'chat',
+    TableName: 'chat-v3',
     KeyConditionExpression: '#s = :s',
     ExpressionAttributeValues: {
       ':s': `${req.query.session_id}`,
@@ -18,7 +18,7 @@ router.get('/', async (req: any, res: any) => {
   };
 
   try {
-    res.send(await query(params));
+    res.send((await query(params)).Items);
   } catch (e) {
     console.error(e);
     res.sendStatus(500);
@@ -26,11 +26,11 @@ router.get('/', async (req: any, res: any) => {
 });
 
 router.post('/new', async (req: any, res: any) => {
-  if (!req.query.session_id || !req.query.message) {
+  if (!req.query.session_id || !req.query.message || !req.query.userId) {
     res.sendStatus(422);
   }
   try {
-    await newChat(req.query.session_id, req.query.message);
+    await newChat(req.query.session_id, req.query.message, req.query.userId);
     res.send('success');
   } catch (e) {
     console.error(e);

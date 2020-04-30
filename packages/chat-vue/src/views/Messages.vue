@@ -25,19 +25,16 @@ import { Component, Vue, Watch } from 'vue-property-decorator';
 export default class extends Vue {
   private sessions: any[] = [];
   private chats: any[] = [];
-  private selectedSession: string = '';
+  private selectedSession: any = {};
+  private selectedUser: any = {};
 
   @Watch('selectedSession')
   private onSessionChange() {
     this.getChats(this.selectedSession);
   }
 
-  get user() {
-    return this.$store.getters.user;
-  }
-
   private selectSession(session: any) {
-    this.selectedSession = session['session-id'];
+    this.selectedSession = session;
   }
 
   private displayUsers(session: any) {
@@ -53,13 +50,13 @@ export default class extends Vue {
   }
 
   private async getSessions() {
-    const res = await fetch(`http://localhost:8000/users/sessions?user_id=${this.user.userId}`);
+    const res = await fetch(`http://localhost:8000/users/sessions?user_id=${this.$store.getters.user.userId}`);
     this.sessions = await res.json();
   }
 
-  private async getChats(selectedSession: string) {
-    const res = await fetch(`http://localhost:8000/chats?session_id=${selectedSession}`);
-    this.chats = await res.json();
+  private async getChats(selectedSession: any) {
+    this.chats = await (await fetch(`http://localhost:8000/chats?session_id=${selectedSession['session-id']}`)).json();
+    this.selectedUser = await (await fetch(`http://localhost:8000/users?user_id=${selectedSession.users.join()[0]}`)).json();
   }
 }
 </script>

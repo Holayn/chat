@@ -21,6 +21,8 @@
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
 
+const API_URL = process.env.VUE_APP_API_URL;
+
 @Component({})
 export default class extends Vue {
   private sessions: any[] = [];
@@ -50,13 +52,13 @@ export default class extends Vue {
   }
 
   private async getSessions() {
-    const res = await fetch(`http://localhost:8000/users/sessions?user_id=${this.$store.getters.user.userId}`);
+    const res = await fetch(`${API_URL}/users/sessions?user_id=${this.$store.getters.user.userId}`);
     this.sessions = await res.json();
   }
 
   private async getChats(selectedSession: any) {
-    this.chats = await (await fetch(`http://localhost:8000/chats?session_id=${selectedSession['session-id']}`)).json();
-    this.selectedUser = await (await fetch(`http://localhost:8000/users?user_id=${selectedSession.users.join()[0]}`)).json();
+    this.chats = await (await fetch(`${API_URL}/chats?session_id=${selectedSession['session-id']}`)).json();
+    this.selectedUser = await (await fetch(`${API_URL}/users?user_id=${selectedSession.users.join()[0]}`)).json();
   }
 }
 </script>

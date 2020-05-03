@@ -1,21 +1,36 @@
 <template>
-  <div>
-    <h1>Messages</h1>
-    <div class="messages">
-      <div class="sessions-section">
-        <div class="session-card" v-for="(session, i) in sessions" :key="i" @click="selectSession(session)">
-          <span>
-            {{displayUsers(session)}}
-          </span>
-        </div>
-      </div>
-      <div class="chat-section">
+  <v-container fluid>
+    <v-row
+      justify="center"
+    >
+      <v-col cols="4" class="text-center">
+        <h1>Messages</h1>
+      </v-col>
+    </v-row>
+    <v-row class="messages">
+      <v-col cols="3" class="sessions-section">
+        <v-simple-table>
+          <template v-slot:default>
+            <thead>
+              <tr>
+                <th class="text-center"> Friends </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="session-card" v-for="(session, i) in sessions" :key="i" @click="selectSession(session)">
+                <td class="text-left"> {{ displayUsers(session) }} </td>
+              </tr>
+            </tbody>
+          </template>
+        </v-simple-table>
+      </v-col>
+      <v-col cols="8" class="chat-section">
         <div class="chat-card" v-for="(chat, i) in chats" :key="i">
           {{chat}}
         </div>
-      </div>
-    </div>
-  </div>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script lang="ts">
@@ -40,7 +55,7 @@ export default class extends Vue {
   }
 
   private displayUsers(session: any) {
-    return session.users.join();
+    return session.users.map(user => user.name).join(',');
   }
 
   private created() {
@@ -64,15 +79,7 @@ export default class extends Vue {
 </script>
 
 <style lang="scss" scoped>
-  .messages {
-    display: flex;
-  }
   .session-card {
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
     .selected {
       background-color: lightblue;
     }
@@ -82,15 +89,5 @@ export default class extends Vue {
   }
   .session-card:nth-child(odd) {
     background-color: whitesmoke;
-  }
-
-  .sessions-section {
-    // flex: auto;
-    width: 15%;
-  }
-
-  .chat-section {
-    // flex-grow: 6;
-    width: 85%;
   }
 </style>

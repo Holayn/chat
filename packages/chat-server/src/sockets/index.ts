@@ -4,9 +4,6 @@ import * as socket from 'socket.io';
 import { newChat } from '../shared/chat';
 import { getSessions } from '../shared/session';
 
-// interfaces
-import awsSdk from 'aws-sdk';
-
 interface IConnectedUsers {
   [key:string]: socket.Socket;
 }
@@ -30,8 +27,8 @@ export function sockets(io: any) {
       // add message to database
       await newChat(session, message, userId);
       // send to connected user if they are connected
-      const users: awsSdk.DynamoDB.DocumentClient.QueryOutput = await getSessions(session);
-      users.Items?.forEach((item: Record<string, any>) => {
+      const users = await getSessions(session);
+      users?.forEach((item: Record<string, any>) => {
         const socket = connectedUsers[item['user-id']];
         if (socket) {
           socket.emit('chat', {

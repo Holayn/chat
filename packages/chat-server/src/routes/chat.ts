@@ -18,7 +18,7 @@ router.get('/', async (req: any, res: any) => {
   };
 
   try {
-    res.send((await query(params)).Items);
+    res.send(await query(params));
   } catch (e) {
     console.error(e);
     res.sendStatus(500);

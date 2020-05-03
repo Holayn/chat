@@ -37,7 +37,7 @@ router.get('/findByUsername', async (req: any, res: any) => {
   };
 
   try {
-    res.send((await query(params)).Items?.[0]);
+    res.send((await query(params))?.[0]);
   } catch (e) {
     console.error(e);
     res.sendStatus(500);
@@ -58,7 +58,7 @@ export async function getUserSessions(userId: string) {
   };
 
   try {
-    const sessions = (await query(params)).Items;
+    const sessions = (await query(params));
 
     // populate session objects with the user-id(s) associated with them
     // execute DB fetches in parallel
@@ -73,14 +73,14 @@ export async function getUserSessions(userId: string) {
           '#s': 'session-id',
         },
       };
-      const allSessions = (await query(paramsAllSessionEntries)).Items ?? [];
+      const allSessions = (await query(paramsAllSessionEntries) ?? []);
       for (let i=0; i<allSessions.length; i++) {
         const allSession = allSessions[i];
         if (!session.users) {
           session.users = [];
         }
         if (allSession['user-id'] !== userId) {
-          session.users.push(await getUser(allSession['user-id']));
+          session.users.push(await getUser(allSession['user-id'] as string));
         }
       }
       return session;

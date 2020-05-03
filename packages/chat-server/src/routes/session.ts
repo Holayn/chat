@@ -6,23 +6,23 @@ import { getSessions } from '../shared/session';
 
 const router = express.Router();
 
-router.get('/', async (req: any, res: any) => {
+router.get('/', async (req, res) => {
   try {
-    res.send(await getSessions(req.query.session_id));
+    res.send(await getSessions(req.query.session_id as string));
   } catch (e) {
     console.error(e);
     res.sendStatus(500);
   }
 });
 
-router.post('/new', async (req: any, res: any) => {
+router.post('/new', async (req, res) => {
   if (!req.query.user_id_1 || !req.query.user_id_2) {
     return;
   }
   try {
     const sessionId = v4();
-    await put(newSessionParams(sessionId, req.query.user_id_1));
-    await put(newSessionParams(sessionId, req.query.user_id_2));
+    await put(newSessionParams(sessionId, req.query.user_id_1 as string));
+    await put(newSessionParams(sessionId, req.query.user_id_2 as string));
     res.send({"session-id": sessionId});
   } catch (e) {
     console.error(e);

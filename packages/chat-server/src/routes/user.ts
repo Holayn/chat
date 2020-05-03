@@ -4,9 +4,9 @@ import query from '../db/query';
 
 const router = express.Router();
 
-router.get('/sessions', async (req: any, res: any) => {
+router.get('/sessions', async (req, res) => {
   try {
-    const data = await getUserSessions(req.query.user_id);
+    const data = await getUserSessions(req.query.user_id as string);
     res.send(data);
   } catch (e) {
     console.error(e);
@@ -14,16 +14,16 @@ router.get('/sessions', async (req: any, res: any) => {
   }
 });
 
-router.get('/', async (req: any, res: any) => {
+router.get('/', async (req, res) => {
   try {
-    res.send(await getUser(req.query.user_id));
+    res.send(await getUser(req.query.user_id as string));
   } catch (e) {
     console.error(e);
     res.sendStatus(500);
   }
 });
 
-router.get('/findByUsername', async (req: any, res: any) => {
+router.get('/findByUsername', async (req, res) => {
   const params = {
     TableName: 'user',
     IndexName:'username-index',
@@ -62,7 +62,7 @@ export async function getUserSessions(userId: string) {
 
     // populate session objects with the user-id(s) associated with them
     // execute DB fetches in parallel
-    const retVal = await Promise.all(sessions?.map(async (session: any) => {
+    const retVal = await Promise.all(sessions?.map(async (session) => {
       const paramsAllSessionEntries = {
         TableName: 'session',
         KeyConditionExpression: '#s = :s',

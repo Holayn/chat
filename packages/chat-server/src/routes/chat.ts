@@ -5,7 +5,7 @@ import { newChat } from '../shared/chat';
 
 const router = express.Router();
 
-router.get('/', async (req: any, res: any) => {
+router.get('/', async (req, res) => {
   const params = {
     TableName: 'chat-v3',
     KeyConditionExpression: '#s = :s',
@@ -25,12 +25,12 @@ router.get('/', async (req: any, res: any) => {
   }
 });
 
-router.post('/new', async (req: any, res: any) => {
+router.post('/new', async (req, res) => {
   if (!req.query.session_id || !req.query.message || !req.query.userId) {
     res.sendStatus(422);
   }
   try {
-    await newChat(req.query.session_id, req.query.message, req.query.userId);
+    await newChat(req.query.session_id as string, req.query.message as string, req.query.userId as string);
     res.send('success');
   } catch (e) {
     console.error(e);

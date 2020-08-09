@@ -24,6 +24,11 @@ router.get('/', async (req: any, res: any) => {
 });
 
 router.get('/findByUsername', async (req: any, res: any) => {
+  if (!req.query.username) {
+    res.sendStatus(400);
+    return;
+  }
+
   const params = {
     TableName: 'user',
     IndexName:'username-index',

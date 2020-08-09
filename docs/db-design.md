@@ -31,26 +31,29 @@ best practices: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide
 
 
 ### user table
-- user-id
+- user-id (primary key)
 - name
 - username
 - password
 
 ### chat table
-- session-id & chat-id
+- session-id (primary key)
+- chat-id
 - user-id of sender
 - message
-- timestamp
+- timestamp (primary sort key)
 - type "text" "sticker" "image"
 
 ### session table
-- session-id & user-id
+- session-id (primary key)
+- user-id (primary sort key)
 - type "group" or "regular"
 
 
 ## example items:
 
 ### user
+```
 {
   "user-id": 0,
   "name": "kai",
@@ -66,15 +69,18 @@ best practices: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide
   "name": "wendy",
   "username": "mioumeek"
 }
+```
 
 
 ### chat
+```
 {
   "session-id": "0",
   "chat-id": "0",
   "message": "hi",
-  "timestamp": "202004111135"
-  "type": "text"
+  "timestamp": "202004111135",
+  "type": "text",
+  "user-id": "0"
 }
 {
   "session-id": "0",
@@ -82,16 +88,20 @@ best practices: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide
   "message": "hey man",
   "timestamp": "202004111138",
   "type": "text"
+  "user-id": "1"
 }
 {
   "session-id": "1",
   "chat-id": "2",
   "message": "hello",
   "timestamp": "202004111139",
-  "type": "text"
+  "type": "text",
+  "user-id": "0"
 }
+```
 
 ### session
+```
 {
   "session-id": "0",
   "user-id": "0",
@@ -112,3 +122,4 @@ best practices: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide
   "user-id": "2",
   "type": "regular"
 }
+```

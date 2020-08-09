@@ -1,25 +1,42 @@
 <template>
-  <div>
-    <h1>Messages</h1>
-    <div class="messages">
-      <div class="sessions-section">
-        <div class="session-card" v-for="(session, i) in sessions" :key="i" @click="selectSession(session)">
-          <span>
-            {{displayUsers(session)}}
-          </span>
-        </div>
-      </div>
-      <div class="chat-section">
+  <v-container fluid>
+    <v-row
+      justify="center"
+    >
+      <v-col cols="4" class="text-center">
+        <h1>Messages</h1>
+      </v-col>
+    </v-row>
+    <v-row class="messages">
+      <v-col cols="3" class="sessions-section">
+        <v-simple-table>
+          <template v-slot:default>
+            <thead>
+              <tr>
+                <th class="text-center"> Friends </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="session-card" v-for="(session, i) in sessions" :key="i" @click="selectSession(session)">
+                <td class="text-left"> {{ displayUsers(session) }} </td>
+              </tr>
+            </tbody>
+          </template>
+        </v-simple-table>
+      </v-col>
+      <v-col cols="8" class="chat-section">
         <div class="chat-card" v-for="(chat, i) in chats" :key="i">
           {{chat}}
         </div>
-      </div>
-    </div>
-  </div>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
+
+const API_URL = process.env.VUE_APP_API_URL;
 
 @Component({})
 export default class extends Vue {
@@ -38,7 +55,7 @@ export default class extends Vue {
   }
 
   private displayUsers(session: any) {
-    return session.users.join();
+    return session.users.map(user => user.name).join(',');
   }
 
   private created() {
@@ -50,27 +67,19 @@ export default class extends Vue {
   }
 
   private async getSessions() {
-    const res = await fetch(`http://localhost:8000/users/sessions?user_id=${this.$store.getters.user.userId}`);
+    const res = await fetch(`${API_URL}/users/sessions?user_id=${this.$store.getters.user.userId}`);
     this.sessions = await res.json();
   }
 
   private async getChats(selectedSession: any) {
-    this.chats = await (await fetch(`http://localhost:8000/chats?session_id=${selectedSession['session-id']}`)).json();
-    this.selectedUser = await (await fetch(`http://localhost:8000/users?user_id=${selectedSession.users.join()[0]}`)).json();
+    this.chats = await (await fetch(`${API_URL}/chats?session_id=${selectedSession['session-id']}`)).json();
+    this.selectedUser = await (await fetch(`${API_URL}/users?user_id=${selectedSession.users.join()[0]}`)).json();
   }
 }
 </script>
 
 <style lang="scss" scoped>
-  .messages {
-    display: flex;
-  }
   .session-card {
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
     .selected {
       background-color: lightblue;
     }
@@ -80,15 +89,5 @@ export default class extends Vue {
   }
   .session-card:nth-child(odd) {
     background-color: whitesmoke;
-  }
-
-  .sessions-section {
-    // flex: auto;
-    width: 15%;
-  }
-
-  .chat-section {
-    // flex-grow: 6;
-    width: 85%;
   }
 </style>

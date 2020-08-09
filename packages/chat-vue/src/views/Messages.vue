@@ -13,7 +13,7 @@
           <template v-slot:default>
             <thead>
               <tr>
-                <th class="text-center"> Friends </th>
+                <th class="text-center">Friends</th>
               </tr>
             </thead>
             <tbody>
@@ -35,46 +35,47 @@
 
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
-import {API_URL} from '../shared';
-import {getSessions} from '../session';
-import {getChats} from '../chat';
-import {getUserById} from '../user';
+import { API_URL } from '../shared';
+import { getChats } from '../chat';
+import { getUserById, IUser } from '../user';
+import { ISession } from '../session';
 
 @Component({})
 export default class extends Vue {
-  private sessions: any[] = [];
-  private chats: any[] = [];
-  private selectedSession: any = {};
-  private selectedUser: any = {};
-
-  @Watch('selectedSession')
-  private onSessionChange() {
-    this.getChats(this.selectedSession);
-  }
-
-  private selectSession(session: any) {
-    this.selectedSession = session;
-  }
-
-  private displayUsers(session: any) {
-    return session.users.map((user: any) => user.name).join(',');
-  }
+  private selectedSession: ISession = {} as ISession;
+  private selectedUser: IUser = {} as IUser;
 
   private created() {
-    if (this.$store.getters.hasUser) {
-      this.getSessions();
-    } else {
-      this.$router.push('/');
+    this.$store.dispatch('getSessions');
+  }
+
+  get sessions() {
+    return this.$store.getters.sessions;
+  }
+
+  get chats() {
+    return this.$store.getters.chats;
+  }
+
+  @Watch('sessions')
+  private onSessionChange() {
+    if (this.sessions.length !== 0 && Object.keys(this.selectedSession).length === 0) {
+      this.getChats(this.sessions[0]);
     }
   }
 
-  private async getSessions() {
-    this.sessions = await getSessions(this.$store.getters.user.userId);
+  private selectSession(session: ISession) {
+    this.selectedSession = session;
+    this.getChats(session);
   }
 
-  private async getChats(selectedSession: any) {
-    this.chats = await getChats(selectedSession['session-id']);
-    this.selectedUser = await getUserById(selectedSession.users[0]['user-id']);
+  private displayUsers(session: ISession) {
+    return session.users.map((user: any) => user.name).join(',');
+  }
+
+  private async getChats(session: ISession) {
+    this.$store.dispatch('getChats', session['session-id']);
+    this.selectedUser = await getUserById(session.users[0]['user-id']);
   }
 }
 </script>

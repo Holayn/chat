@@ -7,13 +7,32 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Watch } from 'vue-property-decorator';
 
 @Component({
   components: {},
 })
 
 export default class App extends Vue {
+  @Watch('hasUser', {immediate: true})
+  onHasUserUpdated(hasUser: boolean) {
+    if (!hasUser) {
+      this.$router.push({
+        name: 'login'
+      });
+      return;
+    }
+
+    if (this.$route.name !== 'messages') {
+      this.$router.push({
+        name: 'messages'
+      });
+    }
+  }
+
+  get hasUser() {
+    return this.$store.getters.hasUser;
+  }
 }
 
 </script>

@@ -11,7 +11,7 @@
             dark
             flat
           >
-            <v-toolbar-title> Login </v-toolbar-title>
+            <v-toolbar-title>Login</v-toolbar-title>
           </v-toolbar>
           <v-card-text>
             <v-form>
@@ -26,7 +26,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn color="primary" @click="login()"> Login </v-btn>
+            <v-btn color="primary" @click="login()">Login</v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -36,19 +36,13 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { getUserByUsername } from '../user';
 
 @Component({})
 export default class extends Vue {
-  private username: any = '';
+  private username = '';
 
   private async login() {
-    const userInfo = await getUserByUsername(this.username);
-    userInfo.userId = userInfo['user-id'];
-    delete userInfo['user-id'];
-    this.$store.dispatch('setUser', userInfo);
-
-    this.$router.push('/messages');
+    this.$store.dispatch('login', this.username);
   }
 }
 </script>

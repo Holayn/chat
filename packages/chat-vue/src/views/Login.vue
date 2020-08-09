@@ -42,7 +42,7 @@ export default class extends Vue {
   private username: any = '';
 
   private async login() {
-    const res = await fetch(`${process.env.VUE_APP_API_URL}/users/findByUsername?username=${this.username}`);
+    const res = await fetch(`${process.env.API_URL}/users/findByUsername?username=${this.username}`);
     const userInfo = (await res.json());
     userInfo.userId = userInfo['user-id'];
     delete userInfo['user-id'];

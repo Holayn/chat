@@ -36,7 +36,7 @@
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
 
-const API_URL = process.env.VUE_APP_API_URL;
+const API_URL = process.env.API_URL;
 
 @Component({})
 export default class extends Vue {

@@ -36,14 +36,14 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { getUser } from '../user';
+import { getUserByUsername } from '../user';
 
 @Component({})
 export default class extends Vue {
   private username: any = '';
 
   private async login() {
-    const userInfo = await getUser(this.username);
+    const userInfo = await getUserByUsername(this.username);
     userInfo.userId = userInfo['user-id'];
     delete userInfo['user-id'];
     this.$store.dispatch('setUser', userInfo);

@@ -54,7 +54,7 @@ export default class extends Vue {
   }
 
   private displayUsers(session: any) {
-    return session.users.map(user => user.name).join(',');
+    return session.users.map((user: any) => user.name).join(',');
   }
 
   private created() {

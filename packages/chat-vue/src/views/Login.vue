@@ -36,14 +36,14 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import { getUser } from '../user';
 
 @Component({})
 export default class extends Vue {
   private username: any = '';
 
   private async login() {
-    const res = await fetch(`${process.env.API_URL}/users/findByUsername?username=${this.username}`);
-    const userInfo = (await res.json());
+    const userInfo = await getUser(this.username);
     userInfo.userId = userInfo['user-id'];
     delete userInfo['user-id'];
     this.$store.dispatch('setUser', userInfo);

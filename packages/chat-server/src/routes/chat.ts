@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get('/', async (req: any, res: any) => {
   const params = {
-    TableName: 'chat-v3',
+    TableName: 'chat',
     KeyConditionExpression: '#s = :s',
     ExpressionAttributeValues: {
       ':s': `${req.query.session_id}`,

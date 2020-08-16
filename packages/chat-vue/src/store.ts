@@ -1,5 +1,4 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
+import { createStore } from 'vuex';
 
 import { getUserByUsername } from './user';
 import { getSessions } from './session';
@@ -10,9 +9,7 @@ import {IUser} from './user';
 import {ISession} from './session';
 import {IChat} from './chat';
 
-Vue.use(Vuex);
-
-export default new Vuex.Store({
+export default createStore({
   state: {
     user: {} as IUser,
     sessions: [] as ISession[],

@@ -1,39 +1,38 @@
 <template>
-  <v-app>
-    <v-content>
-      <router-view/>
-    </v-content>
-  </v-app>
+  <div>
+    <router-view/>
+  </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from 'vue-property-decorator';
+import { defineComponent } from "vue";
 
-@Component({
-  components: {},
+export default defineComponent({
+  computed: {
+    hasUser() {
+      return this.$store.getters.hasUser;
+    },
+  },
+  watch: {
+    hasUser: {
+      handler(hasUser: boolean) {
+        if (!hasUser) {
+          (<any>this).$router.push({
+            name: 'login'
+          });
+          return;
+        }
+
+        if ((<any>this).$route.name !== 'messages') {
+          (<any>this).$router.push({
+            name: 'messages'
+          });
+        }
+      },
+      immediate: true,
+    },
+  }
 })
-
-export default class App extends Vue {
-  @Watch('hasUser', {immediate: true})
-  onHasUserUpdated(hasUser: boolean) {
-    if (!hasUser) {
-      this.$router.push({
-        name: 'login'
-      });
-      return;
-    }
-
-    if (this.$route.name !== 'messages') {
-      this.$router.push({
-        name: 'messages'
-      });
-    }
-  }
-
-  get hasUser() {
-    return this.$store.getters.hasUser;
-  }
-}
 
 </script>
 

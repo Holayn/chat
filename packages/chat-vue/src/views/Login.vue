@@ -1,48 +1,25 @@
 <template>
-  <v-container fluid class="fill-height">
-    <v-row
-      justify="center"
-      align="center"
-    >
-      <v-col cols="4">
-        <v-card class="elevation-12">
-          <v-toolbar
-            color="primary"
-            dark
-            flat
-          >
-            <v-toolbar-title>Login</v-toolbar-title>
-          </v-toolbar>
-          <v-card-text>
-            <v-form>
-              <v-text-field
-                id="username"
-                label="Username"
-                name="username"
-                type="text"
-                v-model="username"
-              />
-            </v-form>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer />
-            <v-btn color="primary" @click="login()">Login</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+  <div>
+    <input v-model="username">
+    <button @click="login()">Login</button>
+  </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import {defineComponent} from 'vue';
+import { useStore } from 'vuex';
 
-@Component({})
-export default class extends Vue {
-  private username = '';
-
-  private async login() {
-    this.$store.dispatch('login', this.username);
+export default defineComponent({
+  name: 'Login',
+  data() {
+    return {
+      username: '',
+    }
+  },
+  methods: {
+    async login() {
+      this.$store.dispatch('login', this.username);
+    }
   }
-}
+})
 </script>

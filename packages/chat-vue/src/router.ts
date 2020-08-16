@@ -1,21 +1,18 @@
-import Vue from 'vue';
-import Router from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
+import { defineAsyncComponent } from 'vue'
 
-Vue.use(Router);
-
-export default new Router({
-  mode: 'history',
-  base: process.env.BASE_URL,
+export default createRouter({
+  history: createWebHistory(process.env.BASE_URL),
   routes: [
     {
       path: '/',
       name: 'login',
-      component: () => import(/* webpackChunkName: "login" */ './views/Login.vue'),
+      component: defineAsyncComponent(() => import(/* webpackChunkName: "login" */ './views/Login.vue')),
     },
     {
       path: '/messages',
       name: 'messages',
-      component: () => import(/* webpackChunkName: "messages" */ './views/Messages.vue'),
+      component: defineAsyncComponent(() => import(/* webpackChunkName: "messages" */ './views/Messages.vue')),
     },
   ],
 });

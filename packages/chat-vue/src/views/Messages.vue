@@ -1,16 +1,16 @@
 <template>
   <div>
     <h1>Messages</h1>
-    <div class="messages">
-      <div class="sessions-section">
-        <div class="session-card" v-for="(session, i) in sessions" :key="i" @click="selectSession(session)">
+    <div>
+      <div>
+        <div v-for="(session, i) in sessions" :key="i" @click="selectSession(session)">
           <span>
             {{displayUsers(session)}}
           </span>
         </div>
       </div>
-      <div class="chat-section">
-        <div class="chat-card" v-for="(chat, i) in chats" :key="i">
+      <div>
+        <div v-for="(chat, i) in chats" :key="i">
           {{chat}}
         </div>
       </div>
@@ -70,15 +70,4 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-  .session-card {
-    .selected {
-      background-color: lightblue;
-    }
-  }
-  .session-card:nth-child(even) {
-    background-color: white;
-  }
-  .session-card:nth-child(odd) {
-    background-color: whitesmoke;
-  }
 </style>

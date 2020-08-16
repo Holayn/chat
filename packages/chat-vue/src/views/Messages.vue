@@ -25,7 +25,7 @@
         </v-simple-table>
       </v-col>
       <v-col cols="8" class="chat-section">
-        <div class="chat-card" v-for="(chat, i) in chats" :key="i">
+        <div class="chat-card" v-for="(chat, i) in chats" :key="chat['chat-id']">
           {{chat}}
         </div>
       </v-col>
@@ -54,7 +54,15 @@ export default class extends Vue {
   }
 
   get chats() {
-    return this.$store.getters.chats;
+    return this.$store.getters.chats.sort((chatA, chatB) => {
+      if (chatA.timestamp < chatB.timestamp) {
+        return -1;
+      } else if (chatA.timestamp > chatB.timestamp) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
   }
 
   @Watch('sessions')

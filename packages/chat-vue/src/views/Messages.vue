@@ -25,8 +25,8 @@
         </v-simple-table>
       </v-col>
       <v-col cols="8" class="chat-section">
-        <div class="chat-card" v-for="(chat, i) in chats" :key="chat['chat-id']">
-          {{chat}}
+        <div class="chat-card" v-for="chat in chats" :key="chat['chat-id']">
+          {{displayName(chat['user-id'])}} at {{new Date(new Number(chat.timestamp))}}: {{chat.message}}
         </div>
       </v-col>
     </v-row>
@@ -79,6 +79,16 @@ export default class extends Vue {
 
   private displayUsers(session: ISession) {
     return session.users.map((user: any) => user.name).join(',');
+  }
+
+  private displayName(id: string) {
+    if (id === this.selectedUser['user-id']) {
+      return this.selectedUser.name;
+    }
+
+    if (id === this.$store.getters.user['user-id']) {
+      return this.$store.getters.user.name;
+    }
   }
 
   private async getChats(session: ISession) {

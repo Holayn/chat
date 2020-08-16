@@ -36,7 +36,7 @@
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import { API_URL } from '../shared';
-import { getChats } from '../chat';
+import { getChats, IChat } from '../chat';
 import { getUserById, IUser } from '../user';
 import { ISession } from '../session';
 
@@ -54,7 +54,7 @@ export default class extends Vue {
   }
 
   get chats() {
-    return this.$store.getters.chats.sort((chatA, chatB) => {
+    return this.$store.getters.chats.sort((chatA: IChat, chatB: IChat) => {
       if (chatA.timestamp < chatB.timestamp) {
         return -1;
       } else if (chatA.timestamp > chatB.timestamp) {

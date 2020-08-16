@@ -2,9 +2,9 @@ import {API_URL} from '../shared';
 import {IUser} from '../user';
 
 export interface ISession {
-  "session-id": number;
+  'session-id': number;
   type: string;
-  "user-id": string;
+  'user-id': string;
   users: IUser[];
 }
 

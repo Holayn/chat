@@ -2,7 +2,7 @@ import {API_URL} from '../shared';
 
 export interface IUser {
   name: string;
-  "user-id": string;
+  'user-id': string;
   username: string;
 }
 

@@ -15,17 +15,17 @@ import { Component, Vue, Watch } from 'vue-property-decorator';
 
 export default class App extends Vue {
   @Watch('hasUser', {immediate: true})
-  onHasUserUpdated(hasUser: boolean) {
+  public onHasUserUpdated(hasUser: boolean) {
     if (!hasUser) {
       this.$router.push({
-        name: 'login'
+        name: 'login',
       });
       return;
     }
 
     if (this.$route.name !== 'messages') {
       this.$router.push({
-        name: 'messages'
+        name: 'messages',
       });
     }
   }
@@ -34,7 +34,6 @@ export default class App extends Vue {
     return this.$store.getters.hasUser;
   }
 }
-
 </script>
 
 <style lang="scss"></style>

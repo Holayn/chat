@@ -40,6 +40,6 @@ export default new Vuex.Store({
     },
     async getChats({commit}, sessionId: string) {
       commit('chats', await getChats(sessionId));
-    }
+    },
   },
 });

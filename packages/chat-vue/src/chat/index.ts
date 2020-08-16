@@ -1,9 +1,9 @@
 import {API_URL} from '../shared';
 
 export interface IChat {
-  "chat-id": string;
-  "session-id": string;
-  "user-id": string;
+  'chat-id': string;
+  'session-id': string;
+  'user-id': string;
   message: string;
   timestamp: string;
 }

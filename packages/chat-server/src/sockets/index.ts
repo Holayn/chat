@@ -18,11 +18,11 @@ const connectedUsers: IConnectedUsers = {}; // access socket object that corresp
 const connectedSockets: IConnectedSockets = {}; // access user that socket corresponds to
 
 export function sockets(io: any) {
-  io.on('connection', function (socket: any) {
+  io.on('connection', (socket: any) => {
     const userId = socket.handshake.query.user_id;
     connectedSockets[socket.id] = userId;
     connectedUsers[userId] = socket;
-  
+
     socket.on('chat', async ({ message, session }: {message: string, session: string}) => {
       // add message to database
       await newChat(session, message, userId);
@@ -38,14 +38,14 @@ export function sockets(io: any) {
         }
       });
     });
-  
+
     socket.on('disconnect', () => {
       const disconnectedUserId = connectedSockets[socket.id];
       delete connectedUsers[disconnectedUserId];
       delete connectedSockets[socket.id];
       console.log(`user ${disconnectedUserId} disconnected`);
     });
-  
+
     console.log(`user ${userId} connected`);
     socket.emit('ack', { msg: 'connected to server' });
   });

@@ -25,25 +25,30 @@
         </v-simple-table>
       </v-col>
       <v-col cols="8" class="chat-section">
-        <div class="chat-card" v-for="chat in chats" :key="chat['chat-id']">
-          {{displayName(chat['user-id'])}} at {{new Date(new Number(chat.timestamp))}}: {{chat.message}}
+        <div class="chat-card" v-for="chat in chats" :key="chat.chatId">
+          {{displayName(chat.userId)}} at {{new Date(new Number(chat.timestamp))}}: {{chat.message}}
         </div>
       </v-col>
     </v-row>
+    <input v-model="message">
+    <button @click="sendMessage()">Send</button>
   </v-container>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
+import { IChat, ISession, IUser } from '@chat/shared';
+
 import { API_URL } from '../shared';
-import { getChats, IChat } from '../chat';
-import { getUserById, IUser } from '../user';
-import { ISession } from '../session';
+import { getChats } from '../chat';
+import { getUserById } from '../user';
 
 @Component({})
 export default class extends Vue {
   private selectedSession: ISession = {} as ISession;
   private selectedUser: IUser = {} as IUser;
+
+  private message: string = '';
 
   private created() {
     this.$store.dispatch('getSessions');
@@ -68,13 +73,18 @@ export default class extends Vue {
   @Watch('sessions')
   private onSessionChange() {
     if (this.sessions.length !== 0 && Object.keys(this.selectedSession).length === 0) {
-      this.getChats(this.sessions[0]);
+      this.selectedSession = this.sessions[0];
     }
+  }
+
+  @Watch('selectedSession')
+  private onSelectedSession() {
+    this.getChats(this.selectedSession);
+    this.selectedUser = this.selectedSession.users[0];
   }
 
   private selectSession(session: ISession) {
     this.selectedSession = session;
-    this.getChats(session);
   }
 
   private displayUsers(session: ISession) {
@@ -82,18 +92,25 @@ export default class extends Vue {
   }
 
   private displayName(id: string) {
-    if (id === this.selectedUser['user-id']) {
+    if (id === this.selectedUser.userId) {
       return this.selectedUser.name;
     }
 
-    if (id === this.$store.getters.user['user-id']) {
+    if (id === this.$store.getters.user.userId) {
       return this.$store.getters.user.name;
     }
   }
 
   private async getChats(session: ISession) {
-    this.$store.dispatch('getChats', session['session-id']);
-    this.selectedUser = await getUserById(session.users[0]['user-id']);
+    this.$store.dispatch('getChats', session.sessionId);
+  }
+
+  private sendMessage() {
+    this.$store.dispatch('sendChat', {
+      message: this.message,
+      sessionId: this.selectedSession.sessionId,
+    });
+    this.message = '';
   }
 }
 </script>

@@ -4,7 +4,7 @@ import * as sockets from 'socket.io';
 import swagger from 'swagger-ui-express';
 
 import logger from './utils/logger';
-import {sockets as socketsHandler} from './sockets/index';
+import { sockets as socketsHandler } from './sockets/index';
 
 // routes
 import session from './routes/session';

@@ -1,14 +1,14 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
+import { IChat, ISession, IUser, Chat } from '@chat/shared';
+
 import { getUserByUsername } from './user';
 import { getSessions } from './session';
 import { getChats } from './chat';
 import { mapMutations, mapGetters } from './store-mappers';
 
-import {IUser} from './user';
-import {ISession} from './session';
-import {IChat} from './chat';
+import {sendChat} from './chat';
 
 Vue.use(Vuex);
 
@@ -20,6 +20,9 @@ export default new Vuex.Store({
   },
   mutations: {
     ...mapMutations(['user', 'sessions', 'chats']),
+    addChat: (state, chat) => {
+      state.chats.push(chat);
+    },
   },
   getters: {
     ...mapGetters(['user', 'sessions', 'chats']),
@@ -36,10 +39,18 @@ export default new Vuex.Store({
       dispatch('setUser', userInfo);
     },
     async getSessions({commit, getters}) {
-      commit('sessions', await getSessions(getters.user['user-id']));
+      commit('sessions', await getSessions(getters.user.userId));
     },
     async getChats({commit}, sessionId: string) {
       commit('chats', await getChats(sessionId));
+    },
+    async sendChat({commit, getters}, {message, sessionId}: {
+      message: string;
+      sessionId: string},
+    ) {
+      const chat = Chat.createChat(sessionId, getters.user.userId, message);
+      commit('addChat', chat);
+      sendChat(chat);
     },
   },
 });

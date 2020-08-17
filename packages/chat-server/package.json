@@ -1,5 +1,6 @@
 {
-  "name": "chat-server",
+  "name": "@chat/chat-server",
+  "private": true,
   "version": "1.0.0",
   "devDependencies": {
     "@types/aws-sdk": "^2.7.0",
@@ -18,6 +19,7 @@
     "dev": "tsc-watch --onSuccess \"yarn start\""
   },
   "dependencies": {
+    "@chat/shared": "^1.0.0",
     "@types/cors": "^2.8.6",
     "@types/socket.io": "^2.1.4",
     "@types/swagger-ui-express": "^4.1.2",

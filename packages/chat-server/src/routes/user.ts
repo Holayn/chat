@@ -1,13 +1,14 @@
 import express from 'express';
 import get from '../db/get';
 import query from '../db/query';
+import { Session } from '@chat/shared';
+import { User } from '@chat/shared';
 
 const router = express.Router();
 
 router.get('/sessions', async (req: any, res: any) => {
   try {
-    const data = await getUserSessions(req.query.user_id);
-    res.send(data);
+    res.send(await getUserSessions(req.query.user_id));
   } catch (e) {
     console.error(e);
     res.sendStatus(500);
@@ -42,14 +43,15 @@ router.get('/findByUsername', async (req: any, res: any) => {
   };
 
   try {
-    res.send((await query(params))?.[0]);
+    const result = (await query(params))?.[0];
+    res.send(new User(result.name as string, result['user-id'] as string, result.username as string));
   } catch (e) {
     console.error(e);
     res.sendStatus(500);
   }
 });
 
-export async function getUserSessions(userId: string) {
+export async function getUserSessions(userId: string): Promise<Session[]> {
   const params = {
     TableName: 'session',
     IndexName:'user-id-index',
@@ -79,7 +81,7 @@ export async function getUserSessions(userId: string) {
         },
       };
       const allSessions = (await query(paramsAllSessionEntries) ?? []);
-      for (let i=0; i<allSessions.length; i++) {
+      for (let i = 0; i < allSessions.length; i++) {
         const allSession = allSessions[i];
         if (!session.users) {
           session.users = [];
@@ -88,7 +90,7 @@ export async function getUserSessions(userId: string) {
           session.users.push(await getUser(allSession['user-id'] as string));
         }
       }
-      return session;
+      return new Session(session['session-id'], session.type, session['user-id'], session.users);
     }) ?? [Promise.reject()]);
     return retVal;
   } catch (e) {
@@ -96,7 +98,7 @@ export async function getUserSessions(userId: string) {
   }
 }
 
-async function getUser(userId: string) {
+async function getUser(userId: string): Promise<User> {
   const params = {
     TableName: 'user',
     Key: {
@@ -105,7 +107,8 @@ async function getUser(userId: string) {
   };
 
   try {
-    return await get(params);
+    const res = await get(params);
+    return new User(res.name as string, res['user-id'] as string, res.username as string);
   } catch (e) {
     throw e;
   }

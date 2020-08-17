@@ -1,0 +1,22 @@
+{
+  "name": "@chat/shared",
+  "version": "1.0.0",
+  "devDependencies": {
+    "@types/uuid": "^7.0.2",
+    "tsc-watch": "^4.2.3",
+    "tslint": "^6.1.1",
+    "tslint-config-airbnb": "^5.11.2",
+    "typescript": "^3.8.3"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc --declaration",
+    "lint": "tslint --fix -p tsconfig.json",
+    "start": "node ./dist/index.js",
+    "dev": "tsc-watch --onSuccess \"yarn start\""
+  },
+  "dependencies": {
+    "uuid": "^7.0.3"
+  }
+}

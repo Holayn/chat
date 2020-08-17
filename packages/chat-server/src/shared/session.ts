@@ -1,6 +1,8 @@
+import { ISession, Session } from '@chat/shared';
+
 import query from '../db/query';
 
-export function getSessions(sessionId: string) {
+export async function getSessions(sessionId: string): Promise<ISession[]> {
   const params = {
     TableName: 'session',
     KeyConditionExpression: '#s = :s',
@@ -12,5 +14,8 @@ export function getSessions(sessionId: string) {
     },
   };
 
-  return query(params);
+  const res = await query(params);
+  return res.map((session) => {
+    return new Session(session['session-id'] as string, session.type as string, session['user-id'] as string, []);
+  });
 }

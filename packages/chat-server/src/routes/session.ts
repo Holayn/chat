@@ -30,7 +30,7 @@ router.post('/new', async (req: any, res: express.Response) => {
     const sessionId = v4();
     await put(newSessionParams(sessionId, req.query.user_id_1));
     await put(newSessionParams(sessionId, req.query.user_id_2));
-    res.send({"session-id": sessionId});
+    res.send({ 'session-id': sessionId });
   } catch (e) {
     console.error(e);
     res.sendStatus(500);
@@ -54,8 +54,8 @@ async function checkSessions(userId: string, otherUserId: string) {
   }
   try {
     const sessions = await getUserSessions(userId);
-    for (let i=0; i<sessions.length; i++) {
-      if (sessions[i].users[0] === otherUserId) {
+    for (let i = 0; i < sessions.length; i++) {
+      if (sessions[i].users[0].userId === otherUserId) {
         return false;
       }
     }

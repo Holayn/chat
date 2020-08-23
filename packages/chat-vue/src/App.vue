@@ -25,6 +25,8 @@ export default class App extends Vue {
         name: 'messages',
       });
     }
+
+    this.$store.dispatch('connect');
   }
 
   get hasUser() {

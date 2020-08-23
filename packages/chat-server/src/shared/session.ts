@@ -1,21 +1,51 @@
-import { ISession, Session } from '@chat/shared';
+import { Session } from '@chat/shared';
 
 import query from '../db/query';
+import {getUser} from './user';
 
-export async function getSessions(sessionId: string): Promise<ISession[]> {
+export async function getUserSessions(userId: string): Promise<Session[]> {
   const params = {
     TableName: 'session',
-    KeyConditionExpression: '#s = :s',
+    IndexName:'user-id-index',
+    KeyConditionExpression: '#u = :u',
     ExpressionAttributeValues: {
-      ':s': `${sessionId}`,
+      ':u': `${userId}`,
     },
     ExpressionAttributeNames: {
-      '#s': 'session-id',
+      '#u': 'user-id',
     },
   };
 
-  const res = await query(params);
-  return res.map((session) => {
-    return new Session(session['session-id'] as string, session.type as string, session['user-id'] as string, []);
-  });
+  try {
+    const sessions = (await query(params));
+
+    // populate session objects with the user-id(s) associated with them
+    // execute DB fetches in parallel
+    const retVal = await Promise.all(sessions?.map(async (session: any) => {
+      const paramsAllSessionEntries = {
+        TableName: 'session',
+        KeyConditionExpression: '#s = :s',
+        ExpressionAttributeValues: {
+          ':s': `${session['session-id']}`,
+        },
+        ExpressionAttributeNames: {
+          '#s': 'session-id',
+        },
+      };
+      const allSessions = (await query(paramsAllSessionEntries) ?? []);
+      for (let i = 0; i < allSessions.length; i++) {
+        const allSession = allSessions[i];
+        if (!session.users) {
+          session.users = [];
+        }
+        if (allSession['user-id'] !== userId) {
+          session.users.push(await getUser(allSession['user-id'] as string));
+        }
+      }
+      return new Session(session['session-id'], session.type, session['user-id'], session.users);
+    }) ?? [Promise.reject()]);
+    return retVal;
+  } catch (e) {
+    throw e;
+  }
 }

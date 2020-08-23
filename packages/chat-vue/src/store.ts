@@ -1,5 +1,8 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import {default as io} from 'socket.io-client';
+
+import {API_URL} from './shared';
 
 import { IChat, ISession, IUser, Chat } from '@chat/shared';
 
@@ -8,9 +11,9 @@ import { getSessions } from './session';
 import { getChats } from './chat';
 import { mapMutations, mapGetters } from './store-mappers';
 
-import {sendChat} from './chat';
-
 Vue.use(Vuex);
+
+let socket: any;
 
 export default new Vuex.Store({
   state: {
@@ -44,13 +47,30 @@ export default new Vuex.Store({
     async getChats({commit}, sessionId: string) {
       commit('chats', await getChats(sessionId));
     },
-    async sendChat({commit, getters}, {message, sessionId}: {
+    async sendChat({commit, getters, dispatch}, {message, sessionId}: {
       message: string;
       sessionId: string},
     ) {
       const chat = Chat.createChat(sessionId, getters.user.userId, message);
       commit('addChat', chat);
-      sendChat(chat);
+      if (!socket) {
+        await dispatch('connect');
+      }
+      socket.emit('chat', chat);
+    },
+    async connect({commit, getters}) {
+      socket = io.connect(`${API_URL}?user_id=${getters.user.userId}`);
+      return new Promise<boolean>((resolve) => {
+        socket.on('ack', (data: any) => {
+          console.log(data);
+          resolve(true);
+        });
+
+        socket.on('chat', (chat: Chat) => {
+          console.log(chat);
+          commit('addChat', chat);
+        });
+      });
     },
   },
 });

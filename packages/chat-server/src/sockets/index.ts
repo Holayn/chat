@@ -1,8 +1,9 @@
 import * as socket from 'socket.io';
+import {IChat} from '@chat/shared';
 
 // operations
 import { newChat } from '../shared/chat';
-import { getSessions } from '../shared/session';
+import { getUserSessions } from '../shared/session';
 
 interface IConnectedUsers {
   [key:string]: socket.Socket;
@@ -23,19 +24,18 @@ export function sockets(io: any) {
     connectedSockets[socket.id] = userId;
     connectedUsers[userId] = socket;
 
-    socket.on('chat', async ({ message, session }: {message: string, session: string}) => {
+    socket.on('chat', async (chat: IChat) => {
       // add message to database
-      await newChat(session, message, userId);
+      await newChat(chat.sessionId, chat.message, chat.userId);
       // send to connected user if they are connected
-      const users = await getSessions(session);
-      users?.forEach((item: Record<string, any>) => {
-        const socket = connectedUsers[item['user-id']];
-        if (socket) {
-          socket.emit('chat', {
-            message,
-            session,
-          });
-        }
+      const sessions = await getUserSessions(chat.userId);
+      sessions?.forEach((session) => {
+        session.users.forEach((user) => {
+          const socket = connectedUsers[user.userId];
+          if (socket) {
+            socket.emit('chat', chat);
+          }
+        });
       });
     });
 

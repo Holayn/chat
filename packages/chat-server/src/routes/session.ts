@@ -2,19 +2,9 @@ import express from 'express';
 import { v4 } from 'uuid';
 
 import put from '../db/put';
-import { getSessions } from '../shared/session';
-import { getUserSessions } from './user';
+import { getUserSessions } from '../shared/session';
 
 const router = express.Router();
-
-router.get('/', async (req: any, res: any) => {
-  try {
-    res.send(await getSessions(req.query.session_id));
-  } catch (e) {
-    console.error(e);
-    res.sendStatus(500);
-  }
-});
 
 // user_id_1 should be the user id of the client making the request
 router.post('/new', async (req: any, res: express.Response) => {

@@ -44,6 +44,11 @@ router.get('/findByUsername', async (req: any, res: any) => {
 
   try {
     const result = (await query(params))?.[0];
+    if (!result) {
+      res.send({
+        message: 'no user found',
+      });
+    }
     res.send(new User(result.name as string, result['user-id'] as string, result.username as string));
   } catch (e) {
     console.error(e);

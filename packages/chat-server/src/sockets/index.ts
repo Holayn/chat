@@ -33,7 +33,7 @@ export function sockets(io: any) {
         session.users.forEach((user) => {
           const socket = connectedUsers[user.userId];
           if (socket) {
-            socket.emit('chat', chat);
+            socket.emit('chat', {chat, session});
           }
         });
       });

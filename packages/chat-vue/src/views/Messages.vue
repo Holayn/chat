@@ -30,18 +30,24 @@
         </div>
       </v-col>
     </v-row>
-    <input v-model="message">
+    <input v-model="message"/>
     <button @click="sendMessage()">Send</button>
+    <div>
+      Start a new chat
+      <div>
+        Search for user: <input v-model="userSearchInput"/> <button @click="search()">Search</button>
+      </div>
+    </div>
   </v-container>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
-import { IChat, ISession, IUser } from '@chat/shared';
+import { IChat, ISession, IUser, Session } from '@chat/shared';
 
 import { API_URL } from '../shared';
 import { getChats } from '../chat';
-import { getUserById } from '../user';
+import { getUserById, getUserByUsername } from '../user';
 
 @Component({})
 export default class extends Vue {
@@ -49,6 +55,7 @@ export default class extends Vue {
   private selectedUser: IUser = {} as IUser;
 
   private message: string = '';
+  private userSearchInput: string = '';
 
   private created() {
     this.$store.dispatch('getSessions');
@@ -81,6 +88,31 @@ export default class extends Vue {
   private onSelectedSession() {
     this.getChats(this.selectedSession);
     this.selectedUser = this.selectedSession.users[0];
+  }
+
+  private async search() {
+    const user = await getUserByUsername(this.userSearchInput);
+    if (!user) {
+      alert('no such user');
+      return;
+    }
+
+    // search sessions for user
+    const session = this.sessions.filter((session: ISession) => {
+      if (session.type != 'regular') {
+        return;
+      }
+      return session.users[0].username === user.username;
+    })[0];
+
+    if (session) {
+      this.selectSession(session);
+      return;
+    }
+
+    const newSession = new Session(`${Math.random()}`, 'regular', this.$store.getters.user.userId, [user]);
+    this.$store.dispatch('addSession', newSession);
+    this.selectSession(newSession);
   }
 
   private selectSession(session: ISession) {

@@ -26,6 +26,9 @@ export default new Vuex.Store({
     addChat: (state, chat) => {
       state.chats.push(chat);
     },
+    addSession: (state, session) => {
+      state.sessions.push(session);
+    },
   },
   getters: {
     ...mapGetters(['user', 'sessions', 'chats']),
@@ -40,6 +43,9 @@ export default new Vuex.Store({
     async login({dispatch}, username: string) {
       const userInfo = await getUserByUsername(username);
       dispatch('setUser', userInfo);
+    },
+    async addSession({commit}, session: ISession) {
+      commit('addSession', session);
     },
     async getSessions({commit, getters}) {
       commit('sessions', await getSessions(getters.user.userId));
@@ -67,7 +73,6 @@ export default new Vuex.Store({
         });
 
         socket.on('chat', (chat: Chat) => {
-          console.log(chat);
           commit('addChat', chat);
         });
       });

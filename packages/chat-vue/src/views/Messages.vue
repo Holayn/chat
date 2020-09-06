@@ -132,6 +132,9 @@ export default class extends Vue {
   }
 
   private sendMessage() {
+    if (!this.message) {
+      return;
+    }
     this.$store.dispatch('sendChat', {
       message: this.message,
       session: this.selectedSession,

@@ -46,19 +46,18 @@ export function sockets(io: any) {
       delete connectedUsers[disconnectedUserId];
       delete connectedSockets[socket.id];
       console.log(`user ${disconnectedUserId} disconnected`);
+      logConnections();
     });
 
     console.log(`user ${userId} connected`);
+    logConnections();
     socket.emit('ack', { msg: 'connected to server' });
   });
 }
 
-(function logConnections() {
-  setTimeout(() => {
-    console.log('Connected sockets:');
-    console.log(connectedSockets);
-    console.log('Connected users:');
-    console.log(Object.keys(connectedUsers));
-    logConnections();
-  },         1000);
-})();
+function logConnections() {
+  console.log('Connected sockets:');
+  console.log(connectedSockets);
+  console.log('Connected users:');
+  console.log(Object.keys(connectedUsers));
+}

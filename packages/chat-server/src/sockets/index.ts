@@ -1,9 +1,9 @@
 import * as socket from 'socket.io';
-import {IChat} from '@chat/shared';
+import {IChat, ISession, Session} from '@chat/shared';
 
 // operations
 import { newChat } from '../shared/chat';
-import { getUserSessions } from '../shared/session';
+import { sessionExists, newSession, fetchSessionUsers } from '../shared/session';
 
 interface IConnectedUsers {
   [key:string]: socket.Socket;
@@ -24,19 +24,21 @@ export function sockets(io: any) {
     connectedSockets[socket.id] = userId;
     connectedUsers[userId] = socket;
 
-    socket.on('chat', async (chat: IChat) => {
+    socket.on('chat', async ({chat, session}: {chat: IChat, session: ISession}) => {
+      // check if session exists in database, create new sessions if not
+      if (!await sessionExists(session.sessionId)) {
+        await newSession(session.sessionId, session.userId, session.users[0].userId);
+      }
       // add message to database
-      await newChat(chat.sessionId, chat.message, chat.userId);
+      await newChat(chat);
       // send to connected user if they are connected
-      const sessions = await getUserSessions(chat.userId);
-      sessions?.forEach((session) => {
-        session.users.forEach((user) => {
-          const socket = connectedUsers[user.userId];
-          if (socket) {
-            socket.emit('chat', {chat, session});
-          }
-        });
-      });
+      const userId = session.users[0].userId;
+      const socket = connectedUsers[userId];
+      if (socket) {
+        // send the session that belongs to that user
+        const users = await fetchSessionUsers(session.sessionId, userId);
+        socket.emit('chat', {chat, session: new Session(session.sessionId, session.type, userId, users)});
+      }
     });
 
     socket.on('disconnect', () => {

@@ -33,7 +33,8 @@ router.post('/new', async (req: any, res: any) => {
     res.sendStatus(422);
   }
   try {
-    await newChat(req.query.session_id, req.query.message, req.query.userId);
+    const chat = Chat.createChat(req.query.session_id, req.query.message, req.query.userId);
+    await newChat(chat);
     res.send('success');
   } catch (e) {
     console.error(e);

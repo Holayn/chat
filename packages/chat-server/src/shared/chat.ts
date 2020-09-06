@@ -1,19 +1,19 @@
-import { v4 as uuid } from 'uuid';
+import {IChat} from '@chat/shared';
 import put from '../db/put';
 
-export function newChat(sessionId: string, message: string, userId: string) {
-  return put(newChatParams(sessionId, message, userId));
+export function newChat(chat: IChat) {
+  return put(newChatParams(chat));
 }
 
-function newChatParams(sessionId: string, message: string, userId: string) {
+function newChatParams(chat: IChat) {
   return {
     TableName: 'chat',
     Item: {
-      message,
-      'session-id': sessionId, // generate a unique session id
-      'user-id': userId,
-      timestamp: `${Date.now()}`,
-      'chat-id': uuid(),
+      message: chat.message,
+      'session-id': chat.sessionId, // generate a unique session id
+      'user-id': chat.userId,
+      timestamp: `${chat.timestamp}`,
+      'chat-id': chat.chatId,
       type: 'text',
     },
   };

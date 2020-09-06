@@ -46,7 +46,6 @@ import { Component, Vue, Watch } from 'vue-property-decorator';
 import { IChat, ISession, IUser, Session } from '@chat/shared';
 
 import { API_URL } from '../shared';
-import { getChats } from '../chat';
 import { getUserById, getUserByUsername } from '../user';
 
 @Component({})
@@ -66,7 +65,10 @@ export default class extends Vue {
   }
 
   get chats() {
-    return this.$store.getters.chats.sort((chatA: IChat, chatB: IChat) => {
+    if (!this.selectedSession.sessionId) {
+      return;
+    }
+    return this.$store.getters.chats[this.selectedSession.sessionId].chats.sort((chatA: IChat, chatB: IChat) => {
       if (chatA.timestamp < chatB.timestamp) {
         return -1;
       } else if (chatA.timestamp > chatB.timestamp) {
@@ -80,14 +82,8 @@ export default class extends Vue {
   @Watch('sessions')
   private onSessionChange() {
     if (this.sessions.length !== 0 && Object.keys(this.selectedSession).length === 0) {
-      this.selectedSession = this.sessions[0];
+      this.selectSession(this.sessions[0]);
     }
-  }
-
-  @Watch('selectedSession')
-  private onSelectedSession() {
-    this.getChats(this.selectedSession);
-    this.selectedUser = this.selectedSession.users[0];
   }
 
   private async search() {
@@ -98,25 +94,27 @@ export default class extends Vue {
     }
 
     // search sessions for user
-    const session = this.sessions.filter((session: ISession) => {
-      if (session.type != 'regular') {
+    const sessionWithUser = this.sessions.filter((session: ISession) => {
+      if (session.type !== 'regular') {
         return;
       }
       return session.users[0].username === user.username;
     })[0];
 
-    if (session) {
-      this.selectSession(session);
+    if (sessionWithUser) {
+      this.selectSession(sessionWithUser);
       return;
     }
 
-    const newSession = new Session(`${Math.random()}`, 'regular', this.$store.getters.user.userId, [user]);
+    const newSession = Session.createSession('regular', this.$store.getters.user.userId, [user]);
     this.$store.dispatch('addSession', newSession);
     this.selectSession(newSession);
   }
 
   private selectSession(session: ISession) {
     this.selectedSession = session;
+    this.selectedUser = this.selectedSession.users[0];
+    this.$store.dispatch('getChats', this.selectedSession);
   }
 
   private displayUsers(session: ISession) {
@@ -133,14 +131,10 @@ export default class extends Vue {
     }
   }
 
-  private async getChats(session: ISession) {
-    this.$store.dispatch('getChats', session.sessionId);
-  }
-
   private sendMessage() {
     this.$store.dispatch('sendChat', {
       message: this.message,
-      sessionId: this.selectedSession.sessionId,
+      session: this.selectedSession,
     });
     this.message = '';
   }

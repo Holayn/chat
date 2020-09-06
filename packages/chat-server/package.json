@@ -16,7 +16,8 @@
     "build": "tsc",
     "lint": "tslint --fix -p tsconfig.json",
     "start": "node ./dist/index.js",
-    "dev": "tsc-watch --onSuccess \"yarn start\""
+    "dev": "tsc-watch --onSuccess \"yarn start\"",
+    "debug": "node --inspect ./dist/index.js"
   },
   "dependencies": {
     "@chat/shared": "^1.0.0",

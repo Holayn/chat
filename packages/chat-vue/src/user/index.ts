@@ -11,11 +11,3 @@ export async function getUserByUsername(username: string): Promise<IUser | null>
   }
   return res;
 }
-
-export async function getUserById(userId: string): Promise<IUser> {
-  if (!userId) {
-    return {} as IUser;
-  }
-  const res = await fetch(`${API_URL}/users?user_id=${userId}`);
-  return await res.json();
-}

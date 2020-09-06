@@ -46,7 +46,7 @@ import { Component, Vue, Watch } from 'vue-property-decorator';
 import { IChat, ISession, IUser, Session } from '@chat/shared';
 
 import { API_URL } from '../shared';
-import { getUserById, getUserByUsername } from '../user';
+import { getUserByUsername } from '../user';
 
 @Component({})
 export default class extends Vue {

@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import https from 'https';
+import fs from 'fs';
 import * as sockets from 'socket.io';
 import swagger from 'swagger-ui-express';
 
@@ -23,7 +25,10 @@ app.use('/sessions', session);
 app.use('/chats', chat);
 app.use('/users', user);
 
-const server = app.listen(PORT, () => {
+const server = https.createServer({
+  key: fs.readFileSync('server.key'),
+  cert: fs.readFileSync('server.cert')
+}, app).listen(PORT, () => {
   console.log(`server listening on ${PORT}`);
 });
 

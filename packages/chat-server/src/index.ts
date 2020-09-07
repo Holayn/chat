@@ -27,6 +27,8 @@ app.use('/sessions', session);
 app.use('/chats', chat);
 app.use('/users', user);
 
+app.get('/health-check', (req, res) => res.sendStatus(200));
+
 const server = https.createServer({
   key: fs.readFileSync('ssl-cert/server.key'),
   cert: fs.readFileSync('ssl-cert/server.cert')

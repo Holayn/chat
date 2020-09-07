@@ -1,12 +1,17 @@
 import express from 'express';
 import query from '../db/query';
-import {getUser} from '../shared/user';
-import {getUserSessions} from '../shared/session';
 import { User } from '@chat/shared';
+
+import {getUserSessions} from '../shared/session';
+import {validateJwt} from '../utils/jwt';
 
 const router = express.Router();
 
-router.get('/sessions', async (req: any, res: any) => {
+router.get('/sessions', validateJwt(), async (req: any, res: any) => {
+  if (req.user.userId !== req.query.user_id) {
+    res.sendStatus(403);
+    return;
+  }
   try {
     res.send(await getUserSessions(req.query.user_id));
   } catch (e) {
@@ -15,16 +20,7 @@ router.get('/sessions', async (req: any, res: any) => {
   }
 });
 
-router.get('/', async (req: any, res: any) => {
-  try {
-    res.send(await getUser(req.query.user_id));
-  } catch (e) {
-    console.error(e);
-    res.sendStatus(500);
-  }
-});
-
-router.get('/findByUsername', async (req: any, res: any) => {
+router.get('/findByUsername', validateJwt(), async (req: any, res: any) => {
   if (!req.query.username) {
     res.sendStatus(400);
     return;

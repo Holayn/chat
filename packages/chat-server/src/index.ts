@@ -13,6 +13,8 @@ import { sockets as socketsHandler } from './sockets/index';
 import session from './routes/session';
 import chat from './routes/chat';
 import user from './routes/user';
+import login from './routes/login';
+import {handleAuthError} from './utils/jwt';
 
 const PORT = process.env.PORT || 8000;
 
@@ -26,6 +28,9 @@ app.use('/api-docs', swagger.serve, swagger.setup(require('../swagger.json')));
 app.use('/sessions', session);
 app.use('/chats', chat);
 app.use('/users', user);
+app.use('/login', login);
+
+app.use(handleAuthError());
 
 app.get('/health-check', (req, res) => res.sendStatus(200));
 

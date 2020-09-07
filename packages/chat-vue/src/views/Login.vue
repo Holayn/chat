@@ -22,6 +22,13 @@
                 type="text"
                 v-model="username"
               />
+              <v-text-field
+                id="password"
+                label="Password"
+                name="password"
+                type="password"
+                v-model="password"
+              />
             </v-form>
           </v-card-text>
           <v-card-actions>
@@ -40,9 +47,13 @@ import { Component, Vue } from 'vue-property-decorator';
 @Component({})
 export default class extends Vue {
   private username = '';
+  private password = '';
 
   private async login() {
-    this.$store.dispatch('login', this.username);
+    this.$store.dispatch('login', {
+      username: this.username,
+      password: this.password,
+    });
   }
 }
 </script>

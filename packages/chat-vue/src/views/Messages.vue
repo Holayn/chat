@@ -56,8 +56,13 @@ export default class extends Vue {
   private message: string = '';
   private userSearchInput: string = '';
 
-  private created() {
+  @Watch('hasUser', {immediate: true})
+  public onHasUserUpdated(hasUser: boolean) {
     this.$store.dispatch('getSessions');
+  }
+
+  get hasUser() {
+    return this.$store.getters.hasUser;
   }
 
   get sessions() {

@@ -24,6 +24,7 @@ export function sockets(io: any) {
     connectedSockets[socket.id] = userId;
     connectedUsers[userId] = socket;
 
+    // TODO: secure this
     socket.on('chat', async ({chat, session}: {chat: IChat, session: ISession}) => {
       // check if session exists in database, create new sessions if not
       if (!await sessionExists(session.sessionId)) {

@@ -8,23 +8,17 @@
 
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
+import {isAuthorized} from './utils/auth';
 
 @Component({})
 export default class App extends Vue {
+  created() {
+    this.$store.dispatch('initializeUserInfo');
+  }
+
   @Watch('hasUser', {immediate: true})
   public onHasUserUpdated(hasUser: boolean) {
-    if (!hasUser) {
-      this.$router.push({
-        name: 'login',
-      });
-      return;
-    }
-
-    if (this.$route.name !== 'messages') {
-      this.$router.push({
-        name: 'messages',
-      });
-    }
+    this.$router.push({name: 'messages'});
 
     this.$store.dispatch('connect');
   }

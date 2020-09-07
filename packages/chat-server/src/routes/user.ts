@@ -3,9 +3,23 @@ import query from '../db/query';
 import { User } from '@chat/shared';
 
 import {getUserSessions} from '../shared/session';
+import {getUser} from '../shared/user';
 import {validateJwt} from '../utils/jwt';
 
 const router = express.Router();
+
+router.get('/', validateJwt(), async (req: any, res: any) => {
+  if (req.user.userId !== req.query.user_id) {
+    res.sendStatus(403);
+    return;
+  }
+  try {
+    res.send(await getUser(req.query.user_id));
+  } catch (e) {
+    console.error(e);
+    res.sendStatus(500);
+  }
+});
 
 router.get('/sessions', validateJwt(), async (req: any, res: any) => {
   if (req.user.userId !== req.query.user_id) {

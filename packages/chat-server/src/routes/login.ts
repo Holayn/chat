@@ -8,12 +8,14 @@ require('dotenv').config();
 
 const router = express.Router();
 
-router.get('/', async (req: any, res: any) => {
+router.get('/', async (req: any, res: express.Response) => {
   try {
     const user = await (getAllUserInfo(req.query.username)) as Record<string, string>;
     const isMatch = await bcrypt.compare(req.query.pass, user.pass as string);
     if (isMatch) {
-      res.send(createJwt(user));
+      const jwt = createJwt(user);
+      res.cookie('token', jwt);
+      res.send(jwt);
     } else {
       res.sendStatus(401);
     }

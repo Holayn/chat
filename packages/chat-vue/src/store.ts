@@ -1,12 +1,13 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import {default as io} from 'socket.io-client';
+import Cookies from 'js-cookie';
 
 import {API_URL} from './shared';
 
 import { IChat, ISession, IUser, Chat } from '@chat/shared';
 
-import { getUserByUsername } from './user';
+import { getUserByUsername, login, getUserById } from './user';
 import { getSessions } from './session';
 import { fetchChats } from './chat';
 import { mapMutations, mapGetters } from './store-mappers';
@@ -59,14 +60,26 @@ export default new Vuex.Store({
     setUser({commit}, userInfo: any) {
       commit('user', userInfo);
     },
-    async login({dispatch}, username: string) {
-      const userInfo = await getUserByUsername(username);
-      dispatch('setUser', userInfo);
+    async login({dispatch}, {username, password}) {
+      if (login(username, password)) {
+        const userInfo = await getUserByUsername(username);
+        if (userInfo) { 
+          Cookies.set('userId', userInfo.userId);
+          dispatch('setUser', userInfo);
+        }
+      }
+    },
+    async initializeUserInfo({dispatch}) {
+      const userId = Cookies.get('userId');
+      if (userId) {
+        const userInfo = await getUserById(userId);
+        dispatch('setUser', userInfo);
+      }
     },
     async addSession({commit}, session: ISession) {
       commit('addSession', session);
     },
-    async getSessions({commit, getters, state}) {
+    async getSessions({commit, getters, state, dispatch}) {
       const sessions = await getSessions(getters.user.userId);
       sessions.forEach((session) => {
         Vue.set(state.chats, session.sessionId, {

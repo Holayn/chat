@@ -88,6 +88,9 @@ export default new Vuex.Store({
       }
       socket.emit('chat', {chat, session});
     },
+    async initialize({dispatch, getters}) {
+      dispatch('initializeUserInfo');
+    },
     async connect({commit, getters}) {
       socket = io.connect(`${API_URL}?user_id=${getters.user.userId}`);
       return new Promise<boolean>((resolve) => {

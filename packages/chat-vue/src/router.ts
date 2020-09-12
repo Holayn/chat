@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import Cookies from 'js-cookie';
 
 import {isAuthorized} from './utils/auth';
 

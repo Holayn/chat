@@ -36,7 +36,7 @@ export const userModule = {
         router.push({name: 'messages'});
       }
     },
-    async initializeUserInfo({dispatch}: any) {
+    initializeUserInfo({dispatch}: any) {
       const jwt = Cookies.get('token');
       if (jwt) {
         const userInfo = decode<IUser>(jwt);

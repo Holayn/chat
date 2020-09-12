@@ -13,7 +13,7 @@ import {isAuthorized} from './utils/auth';
 @Component({})
 export default class App extends Vue {
   created() {
-    this.$store.dispatch('initializeUserInfo');
+    this.$store.dispatch('initialize');
   }
 
   @Watch('hasUser')

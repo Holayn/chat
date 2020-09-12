@@ -25,6 +25,9 @@
         </v-simple-table>
       </v-col>
       <v-col cols="8" class="chat-section">
+        <div v-if="isLoadingChats">
+          loading
+        </div>
         <div class="chat-card" v-for="chat in chats" :key="chat.chatId">
           {{displayName(chat.userId)}} at {{new Date(new Number(chat.timestamp))}}: {{chat.message}}
         </div>
@@ -55,6 +58,10 @@ export default class extends Vue {
   // Inputs
   private message: string = '';
   private userSearchInput: string = '';
+
+  // State
+  private isLoadingSessions: boolean = false;
+  private isLoadingChats: boolean = false;
 
   @Watch('hasUser')
   public async onHasUserUpdated(hasUser: boolean) {
@@ -116,12 +123,18 @@ export default class extends Vue {
     this.selectSession(newSession);
   }
 
-  private selectSession(session: ISession) {
+  private async selectSession(session: ISession) {
     if (!session) {
       return;
     }
     this.selectedSession = session;
-    this.$store.dispatch('getChats', this.selectedSession);
+    this.loadChats();
+  }
+
+  private async loadChats() {
+    this.isLoadingChats = true;
+    await this.$store.dispatch('getChats', this.selectedSession);
+    this.isLoadingChats = false;
   }
 
   private displayUsersInSession(session: ISession) {

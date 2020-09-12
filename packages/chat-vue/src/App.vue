@@ -16,9 +16,11 @@ export default class App extends Vue {
     this.$store.dispatch('initializeUserInfo');
   }
 
-  @Watch('hasUser', {immediate: true})
+  @Watch('hasUser')
   public onHasUserUpdated(hasUser: boolean) {
-    this.$router.push({name: 'messages'});
+    if (this.$route.name !== 'messages') {
+      this.$router.push({name: 'messages'});
+    }
 
     this.$store.dispatch('connect');
   }

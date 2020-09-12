@@ -58,7 +58,7 @@ export default new Vuex.Store({
     async addSession({commit}, session: ISession) {
       commit('addSession', session);
     },
-    async getSessions({commit, getters, state, dispatch}) {
+    async getSessions({commit, getters, state}) {
       const sessions = await getSessions(getters.user.userId);
       sessions.forEach((session) => {
         Vue.set(state.chats, session.sessionId, {

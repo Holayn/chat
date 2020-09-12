@@ -4,12 +4,23 @@ import {API_URL} from '../shared';
 
 export async function get(path: string, auth: boolean = true) {
   if (!auth) {
-    return (await fetch(`${API_URL}/${path}`)).json();
+    const res = await fetch(`${API_URL}/${path}`);
+    if (res.headers.get('content-type')!.split(';')[0] === 'application/json') {
+      return res.json();
+    }
+
+    return res;
   }
-  return (await fetch(`${API_URL}/${path}`, {
+  const res = await fetch(`${API_URL}/${path}`, {
     headers: {
       Authorization: `Bearer ${Cookies.get('token')}`,
     },
     credentials: 'same-origin',
-  })).json();
+  });
+
+  if (res.headers.get('content-type')!.split(';')[0] === 'application/json') {
+    return res.json();
+  }
+
+  return res;
 }

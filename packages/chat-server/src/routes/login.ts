@@ -15,7 +15,9 @@ router.get('/', async (req: any, res: express.Response) => {
     if (isMatch) {
       const jwt = createJwt(user);
       res.cookie('token', jwt);
-      res.send(jwt);
+      res.send({
+        token: jwt
+      });
     } else {
       res.sendStatus(401);
     }

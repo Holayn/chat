@@ -23,15 +23,22 @@ const router = new Router({
   ],
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
+  console.log(`Router :: to:${to.name}, from:${from.name}`);
   // if no cookies set, go to login
-  if ((to.name !== 'login') && !Cookies.get('userId')) {
-    next({name: 'login'});
-    return;
+  if (to.name !== 'login') {
+    const isAuthed = await isAuthorized();
+    if (!isAuthed) {
+      next({name: 'login'});
+      return;
+    }
   }
-  if ((to.name !== 'login') && !isAuthorized()) {
-    next({name: 'login'});
-    return;
+  if (to.name === 'login') {
+    const isAuthed = await isAuthorized();
+    if (isAuthed) {
+      next({name: 'messages'});
+      return;
+    }
   }
   next();
 });

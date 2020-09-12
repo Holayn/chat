@@ -1,8 +1,10 @@
 import {IUser} from '@chat/shared';
 import Cookies from 'js-cookie';
+import decode from 'jwt-decode';
 
-import { getUserByUsername, login, getUserById } from '../user';
+import { login } from '../user';
 import { mapMutations, mapGetters } from '../store-mappers';
+import router from '../router';
 
 interface IUserState {
   user: IUser;
@@ -22,22 +24,22 @@ export const userModule = {
     },
   },
   actions: {
-    setUser({commit}: any, userInfo: any) {
+    setUser({commit}: any, userInfo: IUser) {
       commit('user', userInfo);
     },
     async login({dispatch}: any, {username, password}: {username: string, password: string}) {
-      if (login(username, password)) {
-        const userInfo = await getUserByUsername(username);
-        if (userInfo) {
-          Cookies.set('userId', userInfo.userId);
-          dispatch('setUser', userInfo);
-        }
+      const jwt = await login(username, password);
+      if (jwt) {
+        Cookies.set('token', jwt);
+        const userInfo = decode<IUser>(jwt);
+        dispatch('setUser', userInfo);
+        router.push({name: 'messages'});
       }
     },
     async initializeUserInfo({dispatch}: any) {
-      const userId = Cookies.get('userId');
-      if (userId) {
-        const userInfo = await getUserById(userId);
+      const jwt = Cookies.get('token');
+      if (jwt) {
+        const userInfo = decode<IUser>(jwt);
         dispatch('setUser', userInfo);
       }
     },

@@ -13,7 +13,9 @@
           <template v-slot:default>
             <thead>
               <tr>
-                <th class="text-center">Friends</th>
+                <th class="text-center">Friends <div v-if="isLoadingSessions">
+                  loading
+                </div></th>
               </tr>
             </thead>
             <tbody>
@@ -65,7 +67,10 @@ export default class extends Vue {
 
   @Watch('hasUser', {immediate: true})
   public async onHasUserUpdated(hasUser: boolean) {
+    this.isLoadingSessions = true;
     await this.$store.dispatch('getSessions');
+    this.isLoadingSessions = false;
+
     if (!this.isSessionSelected) {
       this.selectSession(this.sessions[0]);
     }

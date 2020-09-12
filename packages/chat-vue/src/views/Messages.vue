@@ -18,7 +18,7 @@
             </thead>
             <tbody>
               <tr class="session-card" v-for="(session, i) in sessions" :key="i" @click="selectSession(session)">
-                <td class="text-left"> {{ displayUsers(session) }} </td>
+                <td class="text-left"> {{ displayUsersInSession(session) }} </td>
               </tr>
             </tbody>
           </template>
@@ -51,14 +51,17 @@ import { getUserByUsername } from '../user';
 @Component({})
 export default class extends Vue {
   private selectedSession: ISession = {} as ISession;
-  private selectedUser: IUser = {} as IUser;
 
+  // Inputs
   private message: string = '';
   private userSearchInput: string = '';
 
   @Watch('hasUser')
-  public onHasUserUpdated(hasUser: boolean) {
-    this.$store.dispatch('getSessions');
+  public async onHasUserUpdated(hasUser: boolean) {
+    await this.$store.dispatch('getSessions');
+    if (!this.isSessionSelected) {
+      this.selectSession(this.sessions[0]);
+    }
   }
 
   get hasUser() {
@@ -69,8 +72,12 @@ export default class extends Vue {
     return this.$store.getters.sessions;
   }
 
+  get isSessionSelected() {
+    return this.selectedSession.hasOwnProperty('sessionId');
+  }
+
   get chats() {
-    if (!this.selectedSession.sessionId) {
+    if (!this.isSessionSelected) {
       return;
     }
     return this.$store.getters.chats[this.selectedSession.sessionId].chats.sort((chatA: IChat, chatB: IChat) => {
@@ -82,13 +89,6 @@ export default class extends Vue {
         return 0;
       }
     });
-  }
-
-  @Watch('sessions')
-  private onSessionChange() {
-    if (this.sessions.length !== 0 && Object.keys(this.selectedSession).length === 0) {
-      this.selectSession(this.sessions[0]);
-    }
   }
 
   private async search() {
@@ -117,18 +117,21 @@ export default class extends Vue {
   }
 
   private selectSession(session: ISession) {
+    if (!session) {
+      return;
+    }
     this.selectedSession = session;
-    this.selectedUser = this.selectedSession.users[0];
     this.$store.dispatch('getChats', this.selectedSession);
   }
 
-  private displayUsers(session: ISession) {
+  private displayUsersInSession(session: ISession) {
     return session.users.map((user: any) => user.name).join(',');
   }
 
   private displayName(id: string) {
-    if (id === this.selectedUser.userId) {
-      return this.selectedUser.name;
+    const otherSessionUser = this.selectedSession.users[0];
+    if (id === otherSessionUser.userId) {
+      return otherSessionUser.name;
     }
 
     if (id === this.$store.getters.user.userId) {

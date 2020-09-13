@@ -2,6 +2,16 @@ import Cookies from 'js-cookie';
 
 import {get} from './fetch';
 
+export function getToken(): string | null {
+  const token = Cookies.get('token');
+
+  if (!token) {
+    return null;
+  }
+
+  return token;
+}
+
 export async function isAuthorized() {
   if (!Cookies.get('token')) {
     return false;

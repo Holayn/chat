@@ -1,9 +1,10 @@
-import * as socket from 'socket.io';
-import {IChat, ISession, Session} from '@chat/shared';
+import {default as socket, Socket} from 'socket.io';
+import {IChat, ISession, Session, ServerSocketError} from '@chat/shared';
 
 // operations
 import { newChat } from '../shared/chat';
 import { sessionExists, newSession, fetchSessionUsers } from '../shared/session';
+import {verifyJwt} from '../utils/jwt';
 
 interface IConnectedUsers {
   [key:string]: socket.Socket;
@@ -18,9 +19,19 @@ type User = string;
 const connectedUsers: IConnectedUsers = {}; // access socket object that corresponds to a connected user
 const connectedSockets: IConnectedSockets = {}; // access user that socket corresponds to
 
-export function sockets(io: any) {
-  io.on('connection', (socket: any) => {
-    const userId = socket.handshake.query.user_id;
+export function sockets(io: socket.Server) {
+  io.on('connection', (socket: Socket) => {
+    socket.use(validateJwtSocketMiddleware);
+
+    // Verify the token passed was correct
+    const token = socket.handshake.query.token;
+    const decoded = verifyJwt(token);
+    if (!decoded) {
+      socket.emit('connection-ack', {err: ServerSocketError.ConnectionInvalidToken});
+      return;
+    }
+
+    const userId = decoded.userId;
     connectedSockets[socket.id] = userId;
     connectedUsers[userId] = socket;
 
@@ -54,8 +65,18 @@ export function sockets(io: any) {
 
     console.log(`user ${userId} connected`);
     logConnections();
-    socket.emit('ack', { msg: 'connected to server' });
+    socket.emit('connection-ack', { msg: 'connected to server' });
   });
+}
+
+export function validateJwtSocketMiddleware(packet: socket.Packet, next: (err?: any) => void) {
+  const token = packet[1].token;
+  const decoded = verifyJwt(token);
+  if (!decoded) {
+    next(new Error(ServerSocketError.InvalidToken));
+    return;
+  }
+  next();
 }
 
 function logConnections() {

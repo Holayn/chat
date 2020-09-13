@@ -3,7 +3,15 @@ import jwt from 'jsonwebtoken';
 
 require('dotenv').config();
 
-export function validateJwt() {
+export function verifyJwt(token: string) {
+  try {
+    return jwt.verify(token, process.env.jwt_secret || '') as Record<string, string>;
+  } catch {
+    return null;
+  }
+}
+
+export function validateJwtMiddleware() {
   return expressJwt({
     secret: process.env.jwt_secret || '',
     algorithms: ['HS256'],
@@ -21,7 +29,7 @@ export function handleAuthError() {
 export function createJwt(user: Record<string, string>) {
   const token = jwt.sign({
     username: user.username,
-    name: user.name, 
+    name: user.name,
     userId: user['user-id'],
   }, process.env.jwt_secret || '', {
     subject: user.email,

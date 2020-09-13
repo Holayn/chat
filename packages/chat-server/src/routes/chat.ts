@@ -4,11 +4,11 @@ import { Chat } from '@chat/shared';
 import query from '../db/query';
 import { newChat } from '../shared/chat';
 import {getUserIdsInSession} from '../shared/session';
-import {validateJwt} from '../utils/jwt';
+import {validateJwtMiddleware} from '../utils/jwt';
 
 const router = express.Router();
 
-router.get('/', validateJwt(), async (req: any, res: any) => {
+router.get('/', validateJwtMiddleware(), async (req: any, res: any) => {
   if (!req.query.session_id) {
     res.sendStatus(400);
     return;
@@ -40,7 +40,7 @@ router.get('/', validateJwt(), async (req: any, res: any) => {
   }
 });
 
-router.post('/new', validateJwt(), async (req: any, res: any) => {
+router.post('/new', validateJwtMiddleware(), async (req: any, res: any) => {
   if (!req.query.session_id || !req.query.message || !req.query.userId) {
     res.sendStatus(400);
     return;

@@ -1,6 +1,9 @@
 <template>
   <v-app>
     <v-content>
+      <!-- <div v-if="isConnecting">
+        connecting to server...
+      </div> -->
       <router-view/>
     </v-content>
   </v-app>
@@ -12,17 +15,21 @@ import {isAuthorized} from './utils/auth';
 
 @Component({})
 export default class App extends Vue {
+  // private isConnecting: boolean = false;
+
   created() {
     this.$store.dispatch('initialize');
   }
 
   @Watch('hasUser')
-  public onHasUserUpdated(hasUser: boolean) {
+  public async onHasUserUpdated(hasUser: boolean) {
     if (!hasUser) {
       return;
     }
 
-    this.$store.dispatch('connect');
+    // this.isConnecting = true;
+    await this.$store.dispatch('connect');
+    // this.isConnecting = false;
   }
 
   get hasUser() {

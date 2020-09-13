@@ -4,12 +4,14 @@ import {default as io, Socket} from 'socket.io-client';
 
 import {API_URL} from './shared';
 
-import { IChat, ISession, Chat } from '@chat/shared';
+import { IChat, ISession, Chat, ServerSocketError } from '@chat/shared';
 
 import { getSessions } from './session';
 import { fetchChats } from './chat';
 import { mapMutations, mapGetters } from './store-mappers';
 import {userModule} from './store-modules/user';
+import {getToken} from './utils/auth';
+import router from './router';
 
 interface IFrontendChat extends IChat {
   sent?: boolean;
@@ -94,31 +96,47 @@ export default new Vuex.Store({
       if (!socket) {
         await dispatch('connect');
       }
-      socket.emit('chat', {chat, session}, () => {
+      socket.emit('chat', {chat, session, token: getToken()}, () => {
         chatToStore.sent = true;
       });
     },
-    async initialize({dispatch, getters}) {
+    async initialize({dispatch}) {
       dispatch('initializeUserInfo');
     },
     async connect({commit, getters}) {
-      socket = io.connect(`${API_URL}?user_id=${getters.user.userId}`);
-      return new Promise<boolean>((resolve) => {
-        socket.on('ack', (data: any) => {
-          resolve(true);
+      const token = getToken();
+      if (!token) {
+        console.error('socket::error connecting - no token exists');
+        return;
+      }
+      socket = io.connect(`${API_URL}?token=${token}`);
+      return new Promise((resolve, reject) => {
+        socket.on('connection-ack', (msg: Record<string, any>) => {
+          if (msg.err) {
+            reject();
+          }
+          resolve();
         });
 
         socket.on('chat', (payload: {
           chat: IChat,
           session: ISession,
         }) => {
+          // New session handling
           if (!getters.chats[payload.session.sessionId]) {
             commit('addSession', payload.session);
             // do not add chat, since it's a new session and we're going to be fetching the chats
             return;
           }
+
           commit('addChat', payload);
         });
+
+        socket.on('error', (err: string) => {
+          if (err === ServerSocketError.InvalidToken) {
+            router.push({name: 'login'});
+          }
+        })
       });
     },
   },

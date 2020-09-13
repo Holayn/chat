@@ -1,12 +1,12 @@
 import express from 'express';
 import {Session} from '@chat/shared';
 import {checkSessions, newSession} from '../shared/session';
-import {validateJwt} from '../utils/jwt';
+import {validateJwtMiddleware} from '../utils/jwt';
 
 const router = express.Router();
 
 // user_id_1 should be the user id of the client making the request
-router.post('/new', validateJwt(), async (req: any, res: express.Response) => {
+router.post('/new', validateJwtMiddleware(), async (req: any, res: express.Response) => {
   if (!req.query.user_id_1 || !req.query.user_id_2) {
     res.sendStatus(400);
     return;

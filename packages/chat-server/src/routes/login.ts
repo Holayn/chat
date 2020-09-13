@@ -2,7 +2,7 @@ import express from 'express';
 import bcrypt from 'bcrypt';
 
 import query from '../db/query';
-import {createJwt, validateJwt} from '../utils/jwt';
+import {createJwt, validateJwtMiddleware} from '../utils/jwt';
 
 require('dotenv').config();
 
@@ -27,7 +27,7 @@ router.get('/', async (req: any, res: express.Response) => {
   }
 });
 
-router.get('/verify', validateJwt(), async (req: any, res: any) => {
+router.get('/verify', validateJwtMiddleware(), async (req: any, res: any) => {
   res.sendStatus(200);
 });
 

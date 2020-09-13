@@ -4,11 +4,11 @@ import { User } from '@chat/shared';
 
 import {getUserSessions} from '../shared/session';
 import {getUser} from '../shared/user';
-import {validateJwt} from '../utils/jwt';
+import {validateJwtMiddleware} from '../utils/jwt';
 
 const router = express.Router();
 
-router.get('/', validateJwt(), async (req: any, res: any) => {
+router.get('/', validateJwtMiddleware(), async (req: any, res: any) => {
   if (req.user.userId !== req.query.user_id) {
     res.sendStatus(403);
     return;
@@ -21,7 +21,7 @@ router.get('/', validateJwt(), async (req: any, res: any) => {
   }
 });
 
-router.get('/sessions', validateJwt(), async (req: any, res: any) => {
+router.get('/sessions', validateJwtMiddleware(), async (req: any, res: any) => {
   if (req.user.userId !== req.query.user_id) {
     res.sendStatus(403);
     return;
@@ -34,7 +34,7 @@ router.get('/sessions', validateJwt(), async (req: any, res: any) => {
   }
 });
 
-router.get('/findByUsername', validateJwt(), async (req: any, res: any) => {
+router.get('/findByUsername', validateJwtMiddleware(), async (req: any, res: any) => {
   if (!req.query.username) {
     res.sendStatus(400);
     return;

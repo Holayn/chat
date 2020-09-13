@@ -49,11 +49,25 @@ export default class extends Vue {
   private username = '';
   private password = '';
 
+  created() {
+    window.addEventListener('keyup', this.onEnterPressed);
+  }
+
+  destroyed() {
+    window.removeEventListener('keyup', this.onEnterPressed);
+  }
+
   private async login() {
     this.$store.dispatch('login', {
       username: this.username,
       password: this.password,
     });
+  }
+
+  private onEnterPressed(key) {
+    if (key.code === 'Enter') {
+      this.login();
+    }
   }
 }
 </script>

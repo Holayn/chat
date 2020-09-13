@@ -36,6 +36,11 @@ export const userModule = {
         router.push({name: 'messages'});
       }
     },
+    logout({commit}: any) {
+      Cookies.remove('token');
+      commit('user', {});
+      router.push({name: 'login'});
+    },
     initializeUserInfo({dispatch}: any) {
       const jwt = Cookies.get('token');
       if (jwt) {

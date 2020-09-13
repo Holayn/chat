@@ -1,8 +1,9 @@
 <template>
   <div>
-     <div v-if="isConnecting">
-        connecting to server...
-      </div>
+    <div v-if="isConnecting">
+      connecting to server...
+    </div>
+    <button @click="logout()">Logout</button>
     <router-view/>
   </div>
 </template>
@@ -31,6 +32,10 @@ export default class Home extends Vue {
 
   get hasUser() {
     return this.$store.getters.hasUser;
+  }
+
+  private logout() {
+    this.$store.dispatch('logout');
   }
 }
 

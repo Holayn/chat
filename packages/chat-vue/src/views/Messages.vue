@@ -67,19 +67,12 @@ export default class extends Vue {
   private isLoadingSessions: boolean = false;
   private isLoadingChats: boolean = false;
 
-  @Watch('hasUser', {immediate: true})
-  public async onHasUserUpdated(hasUser: boolean) {
+  async mounted() {
     this.isLoadingSessions = true;
     await this.$store.dispatch('getSessions');
     this.isLoadingSessions = false;
 
-    if (!this.isSessionSelected) {
-      this.selectSession(this.sessions[0]);
-    }
-  }
-
-  get hasUser() {
-    return this.$store.getters.hasUser;
+    this.selectSession(this.sessions[0]);
   }
 
   get sessions() {

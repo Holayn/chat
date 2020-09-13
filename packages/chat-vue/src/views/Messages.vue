@@ -30,7 +30,9 @@
         <div v-if="isLoadingChats">
           loading
         </div>
-        <div class="chat-card" v-for="chat in chats" :key="chat.chatId">
+        <div class="chat-card" v-for="chat in chats" :key="chat.chatId" :style="{
+          color: chatColor(chat.sent),
+        }">
           {{displayName(chat.userId)}} at {{new Date(new Number(chat.timestamp))}}: {{chat.message}}
         </div>
       </v-col>
@@ -155,6 +157,13 @@ export default class extends Vue {
     if (id === this.$store.getters.user.userId) {
       return this.$store.getters.user.name;
     }
+  }
+
+  private chatColor(sent: boolean | undefined) {
+    if (sent === true || sent === undefined) {
+      return 'black';
+    }
+    return 'lightgrey';
   }
 
   private sendMessage() {

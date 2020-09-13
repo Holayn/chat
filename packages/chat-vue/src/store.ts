@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import {default as io} from 'socket.io-client';
+import {default as io, Socket} from 'socket.io-client';
 
 import {API_URL} from './shared';
 
@@ -11,9 +11,13 @@ import { fetchChats } from './chat';
 import { mapMutations, mapGetters } from './store-mappers';
 import {userModule} from './store-modules/user';
 
+interface IFrontendChat extends IChat {
+  sent?: boolean;
+}
+
 Vue.use(Vuex);
 
-let socket: any;
+let socket: typeof Socket;
 
 export default new Vuex.Store({
   modules: {
@@ -23,7 +27,7 @@ export default new Vuex.Store({
     sessions: [] as ISession[],
     chats: {} as {
       [session: string]: {
-        chats: Chat[];
+        chats: IFrontendChat[];
         fetched: boolean;
       },
     },
@@ -33,7 +37,7 @@ export default new Vuex.Store({
     addChat: (state, {
       chat,
       session,
-    }: {chat: IChat, session: ISession}) => {
+    }: {chat: IFrontendChat, session: ISession}) => {
       state.chats[session.sessionId].chats.push(chat);
     },
     addSession: (state, session) => {
@@ -47,7 +51,7 @@ export default new Vuex.Store({
       chats: IChat[];
       session: ISession;
     }) => {
-      state.chats[payload.session.sessionId].chats = payload.chats;
+      state.chats[payload.session.sessionId].chats = payload.chats as IFrontendChat[];
       state.chats[payload.session.sessionId].fetched = true;
     },
   },
@@ -71,7 +75,7 @@ export default new Vuex.Store({
     async getChats({commit, state}, session: ISession) {
       if (!state.chats[session.sessionId].fetched) {
         commit('chats', {
-          chats: [...state.chats[session.sessionId].chats, ...await fetchChats(session.sessionId)],
+          chats: [...await fetchChats(session.sessionId), ...state.chats[session.sessionId].chats],
           session,
         });
       }
@@ -82,11 +86,17 @@ export default new Vuex.Store({
     },
     ) {
       const chat = Chat.createChat(session.sessionId, getters.user.userId, message);
-      commit('addChat', {chat, session});
+      const chatToStore: IFrontendChat = {
+        ...chat,
+        sent: false,
+      }
+      commit('addChat', {chat: chatToStore, session, sent: false});
       if (!socket) {
         await dispatch('connect');
       }
-      socket.emit('chat', {chat, session});
+      socket.emit('chat', {chat, session}, () => {
+        chatToStore.sent = true;
+      });
     },
     async initialize({dispatch, getters}) {
       dispatch('initializeUserInfo');

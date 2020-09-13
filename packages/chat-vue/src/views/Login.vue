@@ -58,13 +58,21 @@ export default class extends Vue {
   }
 
   private async login() {
-    this.$store.dispatch('login', {
+    if (!this.username || !this.password) {
+      return;
+    }
+
+    const login = await this.$store.dispatch('login', {
       username: this.username,
       password: this.password,
     });
+
+    if (!login) {
+      alert('login failed');
+    }
   }
 
-  private onEnterPressed(key) {
+  private onEnterPressed(key: KeyboardEvent) {
     if (key.code === 'Enter') {
       this.login();
     }

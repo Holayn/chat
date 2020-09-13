@@ -9,6 +9,9 @@ require('dotenv').config();
 const router = express.Router();
 
 router.get('/', async (req: any, res: express.Response) => {
+  if (!req.query.username || !req.query.pass) {
+    res.sendStatus(400);
+  }
   try {
     const user = await (getAllUserInfo(req.query.username)) as Record<string, string>;
     const isMatch = await bcrypt.compare(req.query.pass, user.pass as string);

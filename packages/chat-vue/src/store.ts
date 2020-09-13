@@ -122,11 +122,16 @@ export default new Vuex.Store({
           chat: IChat,
           session: ISession,
         }) => {
+          const chats = getters.chats[payload.session.sessionId];
           // New session handling
-          if (!getters.chats[payload.session.sessionId]) {
+          if (!chats) {
             commit('addSession', payload.session);
             // do not add chat, since it's a new session and we're going to be fetching the chats
             return;
+          } else {
+            if (!chats.fetched) {
+              return;
+            }
           }
 
           commit('addChat', payload);

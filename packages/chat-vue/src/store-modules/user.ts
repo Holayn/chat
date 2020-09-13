@@ -34,7 +34,9 @@ export const userModule = {
         const userInfo = decode<IUser>(jwt);
         dispatch('setUser', userInfo);
         router.push({name: 'messages'});
+        return true;
       }
+      return false;
     },
     logout({commit}: any) {
       Cookies.remove('token');

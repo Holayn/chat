@@ -25,7 +25,7 @@ export function sockets(io: any) {
     connectedUsers[userId] = socket;
 
     // TODO: secure this
-    socket.on('chat', async ({chat, session}: {chat: IChat, session: ISession}, fn: Function) => {
+    socket.on('chat', async ({chat, session}: {chat: IChat, session: ISession}, ack: Function) => {
       // check if session exists in database, create new sessions if not
       if (!await sessionExists(session.sessionId)) {
         await newSession(session.sessionId, session.userId, session.users[0].userId);
@@ -41,7 +41,7 @@ export function sockets(io: any) {
         socket.emit('chat', {chat, session: new Session(session.sessionId, session.type, userId, users)});
       }
 
-      fn('ack');
+      ack();
     });
 
     socket.on('disconnect', () => {

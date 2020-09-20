@@ -2,5 +2,9 @@
   "private": true,
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "scripts": {
+    "start:server": "yarn --cwd packages/chat-server dev",
+    "start:vue": "yarn --cwd packages/chat-vue dev"
+  }
 }

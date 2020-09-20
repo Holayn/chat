@@ -6,16 +6,19 @@ export interface ISession {
   type: string;
   userId: string;
   users: IUser[];
+  read: boolean;
 }
 
 export class Session implements ISession {
   public static createSession(type: string, userId: string, users: IUser[]) {
-    return new Session(uuid(), type, userId, users);
+    return new Session(uuid(), type, userId, users, false);
   }
-  
+
   constructor(
     public sessionId: string,
     public type: string,
     public userId: string,
-    public users: IUser[]) {}
+    public users: IUser[],
+    public read: boolean = true,
+    ) {}
 }

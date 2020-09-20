@@ -1,4 +1,4 @@
-import {IChat} from '@chat/shared';
+import { IChat } from '@chat/shared';
 import put from '../db/put';
 
 export function newChat(chat: IChat) {

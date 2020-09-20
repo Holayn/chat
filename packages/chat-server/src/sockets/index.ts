@@ -3,7 +3,7 @@ import {IChat, ISession, Session, ServerSocketError} from '@chat/shared';
 
 // operations
 import { newChat } from '../shared/chat';
-import { sessionExists, newSession, fetchSessionUsers } from '../shared/session';
+import { sessionExists, newSession, fetchSessionUsers, updateSession } from '../shared/session';
 import {verifyJwt} from '../utils/jwt';
 
 interface IConnectedUsers {
@@ -48,11 +48,29 @@ export function sockets(io: socket.Server) {
       const socket = connectedUsers[userId];
       if (socket) {
         // send the session that belongs to that user
+        // TODO: improve the logic here - this fetch isn't necessary
         const users = await fetchSessionUsers(session.sessionId, userId);
-        socket.emit('chat', {chat, session: new Session(session.sessionId, session.type, userId, users)});
+        socket.emit('chat', {chat, session: new Session(session.sessionId, session.type, userId, users, false)});
+
+        // the session is now unread for the user being sent a message
+        await updateSession(session.sessionId, userId, {
+          read: false,
+        });
       }
 
       ack();
+    });
+
+    socket.on('readChat', async ({session}: {session: ISession}) => {
+      await updateSession(session.sessionId, session.userId, {
+        read: true,
+      });
+
+      // TODO: let connected user know that the session has been read
+      // const socket = connectedUsers[userId];
+      // if (socket) {
+      //   socket.emit('readChat', session.sessionId);
+      // }
     });
 
     socket.on('disconnect', () => {

@@ -1,9 +1,10 @@
-import { Session, User } from '@chat/shared';
+import { Session } from '@chat/shared';
 
 import query from '../db/query';
 import {getUser} from './user';
 
 import put from '../db/put';
+import update from '../db/update';
 
 export async function getUserSessions(userId: string): Promise<Session[]> {
   const params = {
@@ -25,7 +26,7 @@ export async function getUserSessions(userId: string): Promise<Session[]> {
     // execute DB fetches in parallel
     const retVal = await Promise.all(sessions?.map(async (session: any) => {
       const users = await fetchSessionUsers(session['session-id'], userId);
-      return new Session(session['session-id'], session.type, session['user-id'], users);
+      return new Session(session['session-id'], session.type, session['user-id'], users, session.read);
     }) ?? [Promise.reject()]);
     return retVal;
   } catch (e) {
@@ -120,4 +121,33 @@ export async function checkSessions(userId: string, otherUserId: string) {
   } catch (e) {
     throw new Error(e);
   }
+}
+
+export async function updateSession(sessionId: string, userId: string, propertyValues: Record<string, any>) {
+  const updateExpression = `set ` + Object.keys(propertyValues).reduce((acc, property) => {
+    acc += `#${property} = :${property}, `;
+    return acc;
+  }, '').trim().slice(0, -1);
+  const params = {
+    TableName: 'session',
+    Key: {
+      'session-id': sessionId,
+      'user-id': userId,
+    },
+    ExpressionAttributeValues: {
+      ...Object.keys(propertyValues).reduce((acc, property) => {
+        acc[`:${property}`] = propertyValues[property];
+        return acc;
+      }, {} as Record<string, any>),
+    },
+    ExpressionAttributeNames: {
+      ...Object.keys(propertyValues).reduce((acc, property) => {
+        acc[`#${property}`] = property;
+        return acc;
+      }, {} as Record<string, any>),
+    },
+    UpdateExpression: updateExpression,
+  }
+
+  await update(params);
 }

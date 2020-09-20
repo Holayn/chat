@@ -20,7 +20,7 @@
             </thead>
             <tbody>
               <tr class="session-card" v-for="(session, i) in sessions" :key="i" @click="selectSession(session)">
-                <td class="text-left"> {{ displayUsersInSession(session) }} </td>
+                <td class="text-left"> {{ displayUsersInSession(session) }} <span v-if="!session.read">*</span> </td>
               </tr>
             </tbody>
           </template>
@@ -129,6 +129,8 @@ export default class extends Vue {
     }
     this.selectedSession = session;
     this.loadChats();
+
+    this.$store.dispatch('readChats', this.selectedSession);
   }
 
   private async loadChats() {
@@ -163,6 +165,8 @@ export default class extends Vue {
     if (!this.message) {
       return;
     }
+
+    this.$store.dispatch('readChats', this.selectedSession);
     this.$store.dispatch('sendChat', {
       message: this.message,
       session: this.selectedSession,

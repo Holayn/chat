@@ -2,10 +2,9 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import {default as io, Socket} from 'socket.io-client';
 
-import {API_URL} from './shared';
-
 import { IChat, ISession, Chat, ServerSocketError } from '@chat/shared';
 
+import {API_URL} from './shared';
 import { getSessions } from './session';
 import { fetchChats } from './chat';
 import { mapMutations, mapGetters } from './store-mappers';
@@ -21,7 +20,7 @@ Vue.use(Vuex);
 
 let socket: typeof Socket;
 
-export default new Vuex.Store({
+const store = new Vuex.Store({
   modules: {
     userModule,
   },
@@ -48,6 +47,20 @@ export default new Vuex.Store({
         chats: [],
         fetched: false,
       });
+    },
+    markSessionAsRead: (state, sessionId: string) => {
+      const sessionToMutate = state.sessions.filter((session) => {
+        return sessionId === session.sessionId;
+      })[0];
+
+      Vue.set(sessionToMutate, 'read', true);
+    },
+    markSessionAsUnread: (state, sessionId: string) => {
+      const sessionToMutate = state.sessions.filter((session) => {
+        return sessionId === session.sessionId;
+      })[0];
+
+      Vue.set(sessionToMutate, 'read', false);
     },
     chats: (state, payload: {
       chats: IChat[];
@@ -82,7 +95,7 @@ export default new Vuex.Store({
         });
       }
     },
-    async sendChat({commit, getters, dispatch}, {message, session}: {
+    async sendChat({commit, getters}, {message, session}: {
       message: string;
       session: ISession;
     },
@@ -93,17 +106,21 @@ export default new Vuex.Store({
         sent: false,
       }
       commit('addChat', {chat: chatToStore, session, sent: false});
-      if (!socket) {
-        await dispatch('connect');
-      }
-      socket.emit('chat', {chat, session, token: getToken()}, () => {
+      emit('chat', {chat, session}, () => {
         chatToStore.sent = true;
       });
+    },
+    async readChats({commit}, session: ISession) {
+      if (session.read) {
+        return;
+      }
+      emit('readChat', {session});
+      commit('markSessionAsRead', session.sessionId);
     },
     async initialize({dispatch}) {
       dispatch('initializeUserInfo');
     },
-    async connect({commit, getters}) {
+    async connect({commit, dispatch, getters}) {
       const token = getToken();
       if (!token) {
         console.error('socket::error connecting - no token exists');
@@ -129,6 +146,7 @@ export default new Vuex.Store({
             // do not add chat, since it's a new session and we're going to be fetching the chats
             return;
           } else {
+            commit('markSessionAsUnread', payload.session.sessionId);
             if (!chats.fetched) {
               return;
             }
@@ -137,12 +155,36 @@ export default new Vuex.Store({
           commit('addChat', payload);
         });
 
+        // socket.on('readChat', (sessionId: string) => {
+        // });
+
         socket.on('error', (err: string) => {
-          if (err === ServerSocketError.InvalidToken) {
+          // TODO: figure out why ServerSocketError is undefined
+          if (err === 'invalid token') {
+            dispatch('logout');
             router.push({name: 'login'});
           }
-        })
+        });
       });
     },
   },
 });
+
+/**
+ * Attaches necessary properties to socket emit payloads
+ * @param event
+ * @param payload
+ * @param cb
+ */
+async function emit(event: string, payload: Record<string, any>, cb?: Function) {
+  if (!socket) {
+    await store.dispatch('connect');
+  }
+
+  socket.emit(event, {
+    ...payload,
+    token: getToken(),
+  }, cb);
+}
+
+export default store;

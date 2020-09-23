@@ -1,5 +1,43 @@
 <template>
-  <v-container fluid>
+  <div class="messages-grid">
+    <div class="sidebar space-y-3 p-3 bg-gray-700">
+      <div
+        class="p-4 rounded-sm bg-gray-600 bg-opacity-50 hover:bg-opacity-75 transition duration-500 ease-out text-white"
+        v-for="(session, i) in sessions"
+        :key="i"
+        @click="selectSession(session)">
+        {{displayUsersInSession(session)}}<span v-if="!session.read">*</span>
+      </div>
+    </div>
+    <div class="chats space-y-3 p-3 bg-gray-800">
+      <div
+        class="bg-gray-700 bg-opacity-50 rounded-lg px-3 py-2"
+        v-for="chat in chats"
+        :key="chat.chatId"
+        :class="chatColor(chat.sent)">
+        <div>
+          <span class="text-xl">{{displayName(chat.userId)}}</span>
+          <span class="pl-2 text-xs">{{new Date(new Number(chat.timestamp))}}</span>
+        </div>
+        <div>
+          {{chat.message}}
+        </div>
+      </div>
+    </div>
+    <div class="input flex items-center px-2 bg-gray-900">
+      <div class="flex-auto pr-2">
+        <input class="shadow appearance-none rounded w-full py-2 px-3 text-gray-700 bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="message" type="text" placeholder="Message">
+      </div>
+      <div>
+        <button
+          class="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-0"
+          @click="sendMessage()">
+          Send
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- <v-container fluid>
     <v-row
       justify="center"
     >
@@ -45,7 +83,7 @@
         Search for user: <input v-model="userSearchInput"/> <button @click="search()">Search</button>
       </div>
     </div>
-  </v-container>
+  </v-container> -->
 </template>
 
 <script lang="ts">
@@ -156,9 +194,9 @@ export default class extends Vue {
 
   private chatColor(sent: boolean | undefined) {
     if (sent === true || sent === undefined) {
-      return 'black';
+      return 'text-gray-100';
     }
-    return 'lightgrey';
+    return 'text-gray-300';
   }
 
   private sendMessage() {
@@ -177,15 +215,24 @@ export default class extends Vue {
 </script>
 
 <style lang="scss" scoped>
-  .session-card {
-    .selected {
-      background-color: lightblue;
-    }
+.messages-grid {
+  display: grid;
+  grid-template-rows: auto 50px;
+  grid-template-columns: 25% 75%;
+  grid-template-areas:
+    "sidebar chats"
+    "sidebar input";
+
+  .sidebar {
+    grid-area: sidebar;
   }
-  .session-card:nth-child(even) {
-    background-color: white;
+
+  .chats {
+    grid-area: chats;
   }
-  .session-card:nth-child(odd) {
-    background-color: whitesmoke;
+
+  .input {
+    grid-area: input;
   }
+}
 </style>

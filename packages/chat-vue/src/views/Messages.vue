@@ -1,12 +1,11 @@
 <template>
-  <div class="messages-grid h-full">
+  <div class="messages-grid">
     <div class="sidebar flex flex-col bg-gray-700">
       <div class="flex justify-end pt-3 pr-3">
         <div class="relative">
           <button
             class="relative z-50 inline-block text-sm leading-none border rounded text-white border-white hover:bg-opacity-50 hover:bg-white mt-4 lg:mt-0"
-            @click="toggleUserSearch()"
-            >
+            @click="toggleUserSearch()">
             <!-- https://iconsvg.xyz/ -->
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
           </button>
@@ -40,21 +39,23 @@
         </div>
       </div>
     </div>
-    <div class="chats space-y-3 p-3 bg-gray-800">
+    <div ref="chats" class="chats bg-gray-800">
       <div v-if="isLoadingChats" class="flex h-full w-full">
         <Loading class="item-center justify-center"/>
       </div>
-      <div
-        class="bg-gray-700 bg-opacity-50 rounded-lg px-3 py-2"
-        v-for="chat in chats"
-        :key="chat.chatId"
-        :class="chatColor(chat.sent)">
-        <div>
-          <span class="text-xl">{{displayName(chat.userId)}}</span>
-          <span class="pl-2 text-xs">{{new Date(new Number(chat.timestamp))}}</span>
-        </div>
-        <div>
-          {{chat.message}}
+      <div v-else class="space-y-3 p-3">
+        <div
+          class="bg-gray-700 bg-opacity-50 rounded-lg px-3 py-2"
+          v-for="chat in chats"
+          :key="chat.chatId"
+          :class="chatColor(chat.sent)">
+          <div>
+            <span class="text-xl">{{displayName(chat.userId)}}</span>
+            <span class="pl-2 text-xs">{{new Date(new Number(chat.timestamp))}}</span>
+          </div>
+          <div>
+            {{chat.message}}
+          </div>
         </div>
       </div>
     </div>
@@ -64,7 +65,7 @@
       </div>
       <div>
         <button
-          class="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-orange-500 hover:bg-white mt-4 lg:mt-0"
+          class="inline-block text-sm px-4 py-2 leading-none rounded text-white bg-gray-700 hover:border-transparent hover:text-white hover:bg-orange-500 mt-4 lg:mt-0"
           @click="sendMessage()">
           Send
         </button>
@@ -113,6 +114,16 @@ export default class extends Vue {
     this.isLoadingSessions = false;
 
     this.selectSession(this.sessions[0]);
+  }
+
+  @Watch('isLoadingChats')
+  onIsLoadingChats(val: boolean, oldVal: boolean) {
+    // When chats are loaded, scroll to the bottom
+    if (!val && oldVal) {
+      this.$nextTick(() => {
+        (this.$refs.chats as HTMLElement).scrollTop = (this.$refs.chats as HTMLElement).scrollHeight;
+      });
+    }
   }
 
   get sessions() {
@@ -241,9 +252,11 @@ export default class extends Vue {
 </script>
 
 <style lang="scss" scoped>
+
 .messages-grid {
   display: grid;
-  grid-template-rows: auto 50px;
+  overflow: hidden;
+  grid-template-rows: 1fr 50px;
   grid-template-columns: 25% 75%;
   grid-template-areas:
     "sidebar chats"
@@ -255,6 +268,7 @@ export default class extends Vue {
 
   .chats {
     grid-area: chats;
+    overflow-y: auto;
   }
 
   .input {

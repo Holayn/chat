@@ -3,9 +3,9 @@
     <div v-if="isConnecting" class="absolute flex h-full w-full flex-col items-center bg-orange-200 bg-opacity-50">
       <Loading/>
     </div>
-    <div class="flex flex-col h-full ">
+    <div class="flex flex-col h-full">
       <Toolbar></Toolbar>
-      <router-view class="flex-grow"/>
+      <router-view class="flex-auto"/>
     </div>
   </div>
 </template>

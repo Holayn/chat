@@ -12,4 +12,17 @@ export default class App extends Vue {
 }
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #454545;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: lightslategray;
+    border-radius: 50px;
+  }
+</style>

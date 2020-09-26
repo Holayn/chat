@@ -105,6 +105,14 @@ export default class extends Vue {
   private isLoadingSessions: boolean = false;
   private isLoadingChats: boolean = false;
 
+  created() {
+    window.addEventListener('keyup', this.onEnterPressed);
+  }
+
+  destroyed() {
+    window.removeEventListener('keyup', this.onEnterPressed);
+  }
+
   async mounted() {
     this.isLoadingSessions = true;
     await this.$store.dispatch('getSessions');
@@ -210,6 +218,12 @@ export default class extends Vue {
       session: this.selectedSession,
     });
     this.message = '';
+  }
+
+  private onEnterPressed(key: KeyboardEvent) {
+    if (key.code === 'Enter') {
+      this.sendMessage();
+    }
   }
 }
 </script>

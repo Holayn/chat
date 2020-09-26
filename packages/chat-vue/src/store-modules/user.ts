@@ -10,15 +10,17 @@ interface IUserState {
   user: IUser;
 }
 
+const stateProperties = ['user'];
+
 export const userModule = {
   state: {
     user: {} as IUser,
   },
   mutations: {
-    ...mapMutations(['user']),
+    ...mapMutations(stateProperties),
   },
   getters: {
-    ...mapGetters(['user']),
+    ...mapGetters(stateProperties),
     hasUser(state: IUserState) {
       return !!Object.keys(state.user).length;
     },

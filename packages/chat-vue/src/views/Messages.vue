@@ -10,6 +10,9 @@
         </button>
       </div>
       <div class="flex-grow space-y-3 p-3">
+        <div v-if="isLoadingSessions" class="flex h-full w-full">
+          <Loading class="item-center justify-center"/>
+        </div>
         <div
           class="p-4 rounded-sm bg-gray-600 bg-opacity-50 hover:bg-opacity-75 transition duration-500 ease-out text-white"
           v-for="(session, i) in sessions"
@@ -20,6 +23,9 @@
       </div>
     </div>
     <div class="chats space-y-3 p-3 bg-gray-800">
+      <div v-if="isLoadingChats" class="flex h-full w-full">
+        <Loading class="item-center justify-center"/>
+      </div>
       <div
         class="bg-gray-700 bg-opacity-50 rounded-lg px-3 py-2"
         v-for="chat in chats"
@@ -103,7 +109,13 @@ import { IChat, ISession, IUser, Session } from '@chat/shared';
 import { API_URL } from '../shared';
 import { getUserByUsername } from '../user';
 
-@Component({})
+import Loading from '../components/Loading.vue';
+
+@Component({
+  components: {
+    Loading,
+  }
+})
 export default class extends Vue {
   private selectedSession: ISession = {} as ISession;
 

@@ -1,45 +1,15 @@
 <template>
-  <div></div>
-  <!-- <v-container fluid class="fill-height">
-    <v-row
-      justify="center"
-      align="center"
-    >
-      <v-col cols="4">
-        <v-card class="elevation-12">
-          <v-toolbar
-            color="primary"
-            dark
-            flat
-          >
-            <v-toolbar-title>Login</v-toolbar-title>
-          </v-toolbar>
-          <v-card-text>
-            <v-form>
-              <v-text-field
-                id="username"
-                label="Username"
-                name="username"
-                type="text"
-                v-model="username"
-              />
-              <v-text-field
-                id="password"
-                label="Password"
-                name="password"
-                type="password"
-                v-model="password"
-              />
-            </v-form>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer />
-            <v-btn color="primary" @click="login()">Login</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container> -->
+  <div class="flex flex-col justify-center items-center h-full bg-gray-900">
+    <div class="flex flex-col items-center w-6/12 h-6/12 p-6 space-y-3 rounded-lg bg-gray-800">
+      <input class="shadow appearance-none rounded w-full py-2 px-3 text-white bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" v-model="username" placeholder="username">
+      <input class="shadow appearance-none rounded w-full py-2 px-3 text-white bg-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="password" v-model="password" placeholder="password">
+      <button
+        class="flex-initial inline-block w-3/12 text-sm px-4 py-2 leading-none rounded text-white bg-orange-500 hover:border-transparent hover:text-white hover:bg-orange-700 mt-4 lg:mt-0"
+        @click="login()">
+        Login
+      </button>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">

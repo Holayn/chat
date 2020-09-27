@@ -1,11 +1,15 @@
 import expressJwt from 'express-jwt';
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 
-require('dotenv').config();
+dotenv.config();
 
 export function verifyJwt(token: string) {
   try {
-    return jwt.verify(token, process.env.jwt_secret || '') as Record<string, string>;
+    return jwt.verify(token, process.env.jwt_secret || '') as Record<
+      string,
+      string
+    >;
   } catch {
     return null;
   }
@@ -14,7 +18,7 @@ export function verifyJwt(token: string) {
 export function validateJwtMiddleware() {
   return expressJwt({
     secret: process.env.jwt_secret || '',
-    algorithms: ['HS256'],
+    algorithms: ['HS256']
   });
 }
 
@@ -27,13 +31,17 @@ export function handleAuthError() {
 }
 
 export function createJwt(user: Record<string, string>) {
-  const token = jwt.sign({
-    username: user.username,
-    name: user.name,
-    userId: user['user-id'],
-  }, process.env.jwt_secret || '', {
-    subject: user.email,
-  });
+  const token = jwt.sign(
+    {
+      username: user.username,
+      name: user.name,
+      userId: user['user-id']
+    },
+    process.env.jwt_secret || '',
+    {
+      subject: user.email
+    }
+  );
 
   return token;
 }

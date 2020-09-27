@@ -14,7 +14,8 @@ import session from './routes/session';
 import chat from './routes/chat';
 import user from './routes/user';
 import login from './routes/login';
-import {handleAuthError} from './utils/jwt';
+import { handleAuthError } from './utils/jwt';
+import swaggerFile from '../swagger.json';
 
 const PORT = process.env.PORT || 8000;
 
@@ -24,7 +25,7 @@ app.use(logger);
 app.use(express.json());
 app.use(helmet());
 app.use(cors());
-app.use('/api-docs', swagger.serve, swagger.setup(require('../swagger.json')));
+app.use('/api-docs', swagger.serve, swagger.setup());
 
 app.use('/sessions', session);
 app.use('/chats', chat);
@@ -35,12 +36,17 @@ app.use(handleAuthError());
 
 app.get('/health-check', (req, res) => res.sendStatus(200));
 
-const server = https.createServer({
-  key: fs.readFileSync('ssl-cert/server.key'),
-  cert: fs.readFileSync('ssl-cert/server.cert')
-}, app).listen(PORT, () => {
-  console.log(`server listening on ${PORT}`);
-});
+const server = https
+  .createServer(
+    {
+      key: fs.readFileSync('ssl-cert/server.key'),
+      cert: fs.readFileSync('ssl-cert/server.cert')
+    },
+    app
+  )
+  .listen(PORT, () => {
+    console.log(`server listening on ${PORT}`);
+  });
 
 const io = sockets.listen(server);
 socketsHandler(io);

@@ -1,11 +1,15 @@
 import awsSdk from 'aws-sdk';
+import dotenv from 'dotenv';
 
-require('dotenv').config();
+dotenv.config();
 
-const credentials = new awsSdk.Credentials(process.env.access_key_id || '', process.env.secret_access_key || '');
+const credentials = new awsSdk.Credentials(
+  process.env.access_key_id || '',
+  process.env.secret_access_key || ''
+);
 const config = new awsSdk.Config({
   credentials,
-  region: 'us-east-2',
+  region: 'us-east-2'
 });
 
 export default new awsSdk.DynamoDB.DocumentClient(config);

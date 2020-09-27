@@ -1,7 +1,7 @@
-import { Session } from '@chat/shared';
+import { Session, IUser } from '@chat/shared';
 
 import query from '../db/query';
-import {getUser} from './user';
+import { getUser } from './user';
 
 import put from '../db/put';
 import update from '../db/update';
@@ -9,25 +9,33 @@ import update from '../db/update';
 export async function getUserSessions(userId: string): Promise<Session[]> {
   const params = {
     TableName: 'session',
-    IndexName:'user-id-index',
+    IndexName: 'user-id-index',
     KeyConditionExpression: '#u = :u',
     ExpressionAttributeValues: {
-      ':u': `${userId}`,
+      ':u': `${userId}`
     },
     ExpressionAttributeNames: {
-      '#u': 'user-id',
-    },
+      '#u': 'user-id'
+    }
   };
 
   try {
-    const sessions = (await query(params));
+    const sessions = await query(params);
 
     // populate session objects with the user-id(s) associated with them
     // execute DB fetches in parallel
-    const retVal = await Promise.all(sessions?.map(async (session: any) => {
-      const users = await fetchSessionUsers(session['session-id'], userId);
-      return new Session(session['session-id'], session.type, session['user-id'], users, session.read);
-    }) ?? [Promise.reject()]);
+    const retVal = await Promise.all(
+      sessions?.map(async (session: any) => {
+        const users = await fetchSessionUsers(session['session-id'], userId);
+        return new Session(
+          session['session-id'],
+          session.type,
+          session['user-id'],
+          users,
+          session.read
+        );
+      }) ?? [Promise.reject()]
+    );
     return retVal;
   } catch (e) {
     throw e;
@@ -35,41 +43,43 @@ export async function getUserSessions(userId: string): Promise<Session[]> {
 }
 
 export async function fetchSessionUsers(sessionId: string, userId: string) {
-  const users = [];
   const paramsAllSessionEntries = {
     TableName: 'session',
     KeyConditionExpression: '#s = :s',
     ExpressionAttributeValues: {
-      ':s': `${sessionId}`,
+      ':s': `${sessionId}`
     },
     ExpressionAttributeNames: {
-      '#s': 'session-id',
-    },
-  };
-  const allSessions = (await query(paramsAllSessionEntries) ?? []);
-  for (let i = 0; i < allSessions.length; i++) {
-    const allSession = allSessions[i];
-    if (allSession['user-id'] !== userId) {
-      users.push(await getUser(allSession['user-id'] as string));
+      '#s': 'session-id'
     }
-  }
-  return users;
+  };
+  const allSessions = (await query(paramsAllSessionEntries)) ?? [];
+  return Promise.all(
+    allSessions.reduce((acc, session) => {
+      if (session['user-id'] !== userId) {
+        acc.push(getUser(session['user-id'] as string));
+      }
+      return acc;
+    }, [] as Promise<IUser>[])
+  );
 }
 
-export async function getUserIdsInSession(sessionId: string): Promise<Set<string>> {
+export async function getUserIdsInSession(
+  sessionId: string
+): Promise<Set<string>> {
   const paramsAllSessionEntries = {
     TableName: 'session',
     KeyConditionExpression: '#s = :s',
     ExpressionAttributeValues: {
-      ':s': `${sessionId}`,
+      ':s': `${sessionId}`
     },
     ExpressionAttributeNames: {
-      '#s': 'session-id',
-    },
+      '#s': 'session-id'
+    }
   };
-  const allSessions = (await query(paramsAllSessionEntries) ?? []);
+  const allSessions = (await query(paramsAllSessionEntries)) ?? [];
   const set = new Set<string>();
-  allSessions.forEach((session) => {
+  allSessions.forEach(session => {
     set.add(session['user-id'] as string);
   });
   return set;
@@ -80,17 +90,21 @@ export async function sessionExists(sessionId: string): Promise<boolean> {
     TableName: 'session',
     KeyConditionExpression: '#s = :s',
     ExpressionAttributeValues: {
-      ':s': `${sessionId}`,
+      ':s': `${sessionId}`
     },
     ExpressionAttributeNames: {
-      '#s': 'session-id',
-    },
+      '#s': 'session-id'
+    }
   };
-  const allSessions = (await query(paramsAllSessionEntries) ?? []);
+  const allSessions = (await query(paramsAllSessionEntries)) ?? [];
   return !!allSessions.length;
 }
 
-export async function newSessions(sessionId: string, userId: string, otherUserId: string) {
+export async function newSessions(
+  sessionId: string,
+  userId: string,
+  otherUserId: string
+) {
   await put(newSessionParams(sessionId, userId));
   await put(newSessionParams(sessionId, otherUserId));
 }
@@ -101,53 +115,62 @@ function newSessionParams(sessionId: string, user: string) {
     Item: {
       'session-id': sessionId, // generate a unique session id
       'user-id': user,
-      type: 'regular',
-    },
+      type: 'regular'
+    }
   };
 }
 
-export async function checkSessions(userId: string, otherUserId: string) {
+export async function checkIfSessionsExist(
+  userId: string,
+  otherUserId: string
+) {
   if (!userId || !otherUserId) {
     throw new Error('validation failed');
   }
   try {
     const sessions = await getUserSessions(userId);
-    for (let i = 0; i < sessions.length; i++) {
-      if (sessions[i].users[0].userId === otherUserId) {
-        return false;
-      }
-    }
-    return true;
+    return sessions.every(session => {
+      return session.users[0].userId !== otherUserId;
+    });
   } catch (e) {
     throw new Error(e);
   }
 }
 
-export async function updateSession(sessionId: string, userId: string, propertyValues: Record<string, any>) {
-  const updateExpression = `set ` + Object.keys(propertyValues).reduce((acc, property) => {
-    acc += `#${property} = :${property}, `;
-    return acc;
-  }, '').trim().slice(0, -1);
+export async function updateSession(
+  sessionId: string,
+  userId: string,
+  propertyValues: Record<string, any>
+) {
+  const updateExpression =
+    `set ` +
+    Object.keys(propertyValues)
+      .reduce((acc, property) => {
+        acc += `#${property} = :${property}, `;
+        return acc;
+      }, '')
+      .trim()
+      .slice(0, -1);
   const params = {
     TableName: 'session',
     Key: {
       'session-id': sessionId,
-      'user-id': userId,
+      'user-id': userId
     },
     ExpressionAttributeValues: {
       ...Object.keys(propertyValues).reduce((acc, property) => {
         acc[`:${property}`] = propertyValues[property];
         return acc;
-      }, {} as Record<string, any>),
+      }, Object.create(null))
     },
     ExpressionAttributeNames: {
       ...Object.keys(propertyValues).reduce((acc, property) => {
         acc[`#${property}`] = property;
         return acc;
-      }, {} as Record<string, any>),
+      }, Object.create(null))
     },
-    UpdateExpression: updateExpression,
-  }
+    UpdateExpression: updateExpression
+  };
 
   await update(params);
 }

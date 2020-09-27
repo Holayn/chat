@@ -3,8 +3,8 @@ import { Chat } from '@chat/shared';
 
 import query from '../db/query';
 import { newChat } from '../shared/chat';
-import {getUserIdsInSession, sessionExists} from '../shared/session';
-import {validateJwtMiddleware} from '../utils/jwt';
+import { getUserIdsInSession, sessionExists } from '../shared/session';
+import { validateJwtMiddleware } from '../utils/jwt';
 
 const router = express.Router();
 
@@ -13,7 +13,7 @@ router.get('/', validateJwtMiddleware(), async (req: any, res: any) => {
     res.sendStatus(400);
     return;
   }
-  if (!await sessionExists(req.query.session_id)) {
+  if (!(await sessionExists(req.query.session_id))) {
     res.send([]);
   }
   const userIds = await getUserIdsInSession(req.query.session_id);
@@ -26,17 +26,25 @@ router.get('/', validateJwtMiddleware(), async (req: any, res: any) => {
     TableName: 'chat',
     KeyConditionExpression: '#s = :s',
     ExpressionAttributeValues: {
-      ':s': `${req.query.session_id}`,
+      ':s': `${req.query.session_id}`
     },
     ExpressionAttributeNames: {
-      '#s': 'session-id',
-    },
+      '#s': 'session-id'
+    }
   };
 
   try {
-    res.send((await query(params)).map((chat) => {
-      return new Chat(chat['chat-id'] as string, chat['session-id'] as string, chat['user-id'] as string, chat.message as string, parseInt(chat.timestamp as string, 10));
-    }));
+    res.send(
+      (await query(params)).map(chat => {
+        return new Chat(
+          chat['chat-id'] as string,
+          chat['session-id'] as string,
+          chat['user-id'] as string,
+          chat.message as string,
+          parseInt(chat.timestamp as string, 10)
+        );
+      })
+    );
   } catch (e) {
     console.error(e);
     res.sendStatus(500);
@@ -60,7 +68,11 @@ router.post('/new', validateJwtMiddleware(), async (req: any, res: any) => {
   }
 
   try {
-    const chat = Chat.createChat(req.query.session_id, req.query.message, req.query.userId);
+    const chat = Chat.createChat(
+      req.query.session_id,
+      req.query.message,
+      req.query.userId
+    );
     await newChat(chat);
     res.send('success');
   } catch (e) {

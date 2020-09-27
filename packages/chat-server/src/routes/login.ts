@@ -1,10 +1,11 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
+import dotenv from 'dotenv';
 
 import query from '../db/query';
-import {createJwt, validateJwtMiddleware} from '../utils/jwt';
+import { createJwt, validateJwtMiddleware } from '../utils/jwt';
 
-require('dotenv').config();
+dotenv.config();
 
 const router = express.Router();
 
@@ -13,7 +14,10 @@ router.get('/', async (req: any, res: express.Response) => {
     res.sendStatus(400);
   }
   try {
-    const user = await (getAllUserInfo(req.query.username)) as Record<string, string>;
+    const user = (await getAllUserInfo(req.query.username)) as Record<
+      string,
+      string
+    >;
     const isMatch = await bcrypt.compare(req.query.pass, user.pass as string);
     if (isMatch) {
       const jwt = createJwt(user);
@@ -37,14 +41,14 @@ router.get('/verify', validateJwtMiddleware(), async (req: any, res: any) => {
 async function getAllUserInfo(username: string) {
   const params = {
     TableName: 'user',
-    IndexName:'username-index',
+    IndexName: 'username-index',
     KeyConditionExpression: '#u = :u',
     ExpressionAttributeValues: {
-      ':u': `${username}`,
+      ':u': `${username}`
     },
     ExpressionAttributeNames: {
-      '#u': 'username',
-    },
+      '#u': 'username'
+    }
   };
 
   try {

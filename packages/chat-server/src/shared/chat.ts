@@ -14,7 +14,7 @@ function newChatParams(chat: IChat) {
       'user-id': chat.userId,
       timestamp: `${chat.timestamp}`,
       'chat-id': chat.chatId,
-      type: 'text',
-    },
+      type: 'text'
+    }
   };
 }

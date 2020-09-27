@@ -120,10 +120,13 @@ export default class extends Vue {
   onIsLoadingChats(val: boolean, oldVal: boolean) {
     // When chats are loaded, scroll to the bottom
     if (!val && oldVal) {
-      this.$nextTick(() => {
-        (this.$refs.chats as HTMLElement).scrollTop = (this.$refs.chats as HTMLElement).scrollHeight;
-      });
+      this.scrollToBottom();
     }
+  }
+
+  @Watch('chats')
+  onChatsUpdated() {
+    this.scrollToBottom();
   }
 
   get sessions() {
@@ -225,6 +228,8 @@ export default class extends Vue {
       session: this.selectedSession,
     });
     this.message = '';
+
+    this.scrollToBottom();
   }
 
   private onEnterPressed(key: KeyboardEvent) {
@@ -247,6 +252,12 @@ export default class extends Vue {
     }
 
     this.userSearchInput = '';
+  }
+
+  private scrollToBottom() {
+    this.$nextTick(() => {
+      (this.$refs.chats as HTMLElement).scrollTop = (this.$refs.chats as HTMLElement).scrollHeight;
+    });
   }
 }
 </script>

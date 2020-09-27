@@ -214,7 +214,7 @@ export default class extends Vue {
     if (sent === true || sent === undefined) {
       return 'text-gray-100';
     }
-    return 'text-gray-300';
+    return 'text-gray-500';
   }
 
   private sendMessage() {

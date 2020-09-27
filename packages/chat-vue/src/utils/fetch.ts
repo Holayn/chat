@@ -24,3 +24,13 @@ export async function get(path: string, auth: boolean = true) {
 
   return res;
 }
+
+export async function post(path: string, payload: Record<string, any>) {
+  return await fetch(`${API_URL}/${path}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload),
+  });
+}

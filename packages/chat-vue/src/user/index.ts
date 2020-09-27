@@ -1,6 +1,7 @@
 import {IUser} from '@chat/shared';
 
-import {get} from '../utils/fetch';
+import {get, post} from '../utils/fetch';
+import {RequestError} from '../shared/errors';
 
 export async function getUserByUsername(username: string): Promise<IUser | null> {
   if (!username) {
@@ -33,5 +34,22 @@ export async function login(username: string, password: string): Promise<string|
       return null;
     }
     throw e;
+  }
+}
+
+export async function createAccount(username: string, password: string, email: string, name: string) {
+  try {
+    const res = await post(`users/createAccount`, {
+      username,
+      password,
+      email,
+      name,
+    });
+    if (res.status !== 200) {
+      throw new RequestError(res.status);
+    }
+    return res;
+  } catch (e) {
+    return Promise.reject(e);
   }
 }

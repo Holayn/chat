@@ -5,6 +5,7 @@ import decode from 'jwt-decode';
 import { createAccount, login } from '../user';
 import { mapGetters, mapMutations } from '../store-mappers';
 import router from '../router';
+import { Socket } from '@/sockets';
 
 interface IUserState {
   user: IUser;
@@ -40,11 +41,11 @@ export const userModule = {
       }
       return false;
     },
-    logout({commit, dispatch}: any) {
+    logout({commit}: any) {
       Cookies.remove('token');
       commit('user', {});
       router.push({name: 'login'});
-      dispatch('disconnect');
+      Socket.disconnect();
     },
     async createAccount({}, {username, password, email, name}: {username: string, password: string, email: string, name: string}) {
       return await createAccount(username, password, email, name);

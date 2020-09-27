@@ -11,7 +11,7 @@ export interface ISession {
 
 export class Session implements ISession {
   public static createSession(type: string, userId: string, users: IUser[]) {
-    return new Session(uuid(), type, userId, users, false);
+    return new Session(uuid(), type, userId, users, true);
   }
 
   constructor(

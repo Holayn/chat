@@ -175,18 +175,19 @@ export default class extends Vue {
 
     const newSession = Session.createSession('regular', this.$store.getters.user.userId, [user]);
     this.$store.commit('addSession', newSession);
-    this.selectSession(newSession);
+    this.selectSession(newSession, true);
     this.toggleUserSearch();
   }
 
-  private async selectSession(session: ISession) {
+  private async selectSession(session: ISession, isNewSession: boolean = false) {
     if (!session) {
       return;
     }
     this.selectedSession = session;
-    this.loadChats();
-
-    this.$store.dispatch('readChats', this.selectedSession);
+    if (!isNewSession) {
+      this.loadChats();
+      this.$store.dispatch('readChats', this.selectedSession);
+    }
   }
 
   private async loadChats() {

@@ -3,7 +3,7 @@ import { Chat } from '@chat/shared';
 
 import query from '../db/query';
 import { newChat } from '../shared/chat';
-import {getUserIdsInSession} from '../shared/session';
+import {getUserIdsInSession, sessionExists} from '../shared/session';
 import {validateJwtMiddleware} from '../utils/jwt';
 
 const router = express.Router();
@@ -13,8 +13,11 @@ router.get('/', validateJwtMiddleware(), async (req: any, res: any) => {
     res.sendStatus(400);
     return;
   }
+  if (!await sessionExists(req.query.session_id)) {
+    res.send([]);
+  }
   const userIds = await getUserIdsInSession(req.query.session_id);
-  if (!userIds.includes(req.user.userId)) {
+  if (!userIds.has(req.user.userId)) {
     res.sendStatus(403);
     return;
   }
@@ -51,7 +54,7 @@ router.post('/new', validateJwtMiddleware(), async (req: any, res: any) => {
   }
   // only allow users to add chat to a session they're in
   const userIds = await getUserIdsInSession(req.query.session_id);
-  if (!userIds.includes(req.user.userId)) {
+  if (!userIds.has(req.user.userId)) {
     res.sendStatus(403);
     return;
   }

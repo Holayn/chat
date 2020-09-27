@@ -1,6 +1,6 @@
 import express from 'express';
 import {Session} from '@chat/shared';
-import {checkSessions, newSession} from '../shared/session';
+import {checkSessions, newSessions} from '../shared/session';
 import {validateJwtMiddleware} from '../utils/jwt';
 
 const router = express.Router();
@@ -23,7 +23,7 @@ router.post('/new', validateJwtMiddleware(), async (req: any, res: express.Respo
       return;
     }
     const session = Session.createSession('regular', req.query.user_id_1, []);
-    await newSession(session.sessionId, req.query.user_id_1, req.query.user_id_2);
+    await newSessions(session.sessionId, req.query.user_id_1, req.query.user_id_2);
     res.send(session);
   } catch (e) {
     console.error(e);

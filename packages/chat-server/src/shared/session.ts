@@ -56,7 +56,7 @@ export async function fetchSessionUsers(sessionId: string, userId: string) {
   return users;
 }
 
-export async function getUserIdsInSession(sessionId: string): Promise<string[]> {
+export async function getUserIdsInSession(sessionId: string): Promise<Set<string>> {
   const paramsAllSessionEntries = {
     TableName: 'session',
     KeyConditionExpression: '#s = :s',
@@ -68,11 +68,11 @@ export async function getUserIdsInSession(sessionId: string): Promise<string[]> 
     },
   };
   const allSessions = (await query(paramsAllSessionEntries) ?? []);
-  const set: Record<string, any> = {};
+  const set = new Set<string>();
   allSessions.forEach((session) => {
-    set[session['user-id'] as string] = null;
+    set.add(session['user-id'] as string);
   });
-  return Object.keys(set);
+  return set;
 }
 
 export async function sessionExists(sessionId: string): Promise<boolean> {
@@ -90,7 +90,7 @@ export async function sessionExists(sessionId: string): Promise<boolean> {
   return !!allSessions.length;
 }
 
-export async function newSession(sessionId: string, userId: string, otherUserId: string) {
+export async function newSessions(sessionId: string, userId: string, otherUserId: string) {
   await put(newSessionParams(sessionId, userId));
   await put(newSessionParams(sessionId, otherUserId));
 }

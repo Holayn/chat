@@ -3,7 +3,7 @@ import {IChat, ISession, Session, ServerSocketError} from '@chat/shared';
 
 // operations
 import { newChat } from '../shared/chat';
-import { sessionExists, newSession, fetchSessionUsers, updateSession } from '../shared/session';
+import { sessionExists, newSessions, fetchSessionUsers, updateSession } from '../shared/session';
 import {verifyJwt} from '../utils/jwt';
 
 interface IConnectedUsers {
@@ -39,7 +39,7 @@ export function sockets(io: socket.Server) {
     socket.on('chat', async ({chat, session}: {chat: IChat, session: ISession}, ack: Function) => {
       // check if session exists in database, create new sessions if not
       if (!await sessionExists(session.sessionId)) {
-        await newSession(session.sessionId, session.userId, session.users[0].userId);
+        await newSessions(session.sessionId, session.userId, session.users[0].userId);
       }
       // add message to database
       await newChat(chat);
@@ -62,9 +62,11 @@ export function sockets(io: socket.Server) {
     });
 
     socket.on('readChat', async ({session}: {session: ISession}) => {
-      await updateSession(session.sessionId, session.userId, {
-        read: true,
-      });
+      if (await sessionExists(session.sessionId)) {
+        await updateSession(session.sessionId, session.userId, {
+          read: true,
+        });
+      }
 
       // TODO: let connected user know that the session has been read
       // const socket = connectedUsers[userId];

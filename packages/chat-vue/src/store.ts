@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import {default as io, Socket} from 'socket.io-client';
 
-import { IChat, ISession, Chat, ServerSocketError } from '@chat/shared';
+import { IChat, ISession, Chat } from '@chat/shared';
 
 import {API_URL} from './shared';
 import { getSessions } from './session';
@@ -167,6 +167,9 @@ const store = new Vuex.Store({
         });
       });
     },
+    async disconnect() {
+      socket.disconnect();
+    }
   },
 });
 

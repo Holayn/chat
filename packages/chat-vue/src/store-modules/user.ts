@@ -3,7 +3,7 @@ import Cookies from 'js-cookie';
 import decode from 'jwt-decode';
 
 import { login } from '../user';
-import { mapMutations, mapGetters } from '../store-mappers';
+import { mapGetters, mapMutations } from '../store-mappers';
 import router from '../router';
 
 interface IUserState {
@@ -29,27 +29,28 @@ export const userModule = {
     setUser({commit}: any, userInfo: IUser) {
       commit('user', userInfo);
     },
-    async login({dispatch}: any, {username, password}: {username: string, password: string}) {
+    async login({commit}: any, {username, password}: {username: string, password: string}) {
       const jwt = await login(username, password);
       if (jwt) {
         Cookies.set('token', jwt);
         const userInfo = decode<IUser>(jwt);
-        dispatch('setUser', userInfo);
+        commit('user', userInfo);
         router.push({name: 'messages'});
         return true;
       }
       return false;
     },
-    logout({commit}: any) {
+    logout({commit, dispatch}: any) {
       Cookies.remove('token');
       commit('user', {});
       router.push({name: 'login'});
+      dispatch('disconnect');
     },
-    initializeUserInfo({dispatch}: any) {
+    initializeUserInfo({commit}: any) {
       const jwt = Cookies.get('token');
       if (jwt) {
         const userInfo = decode<IUser>(jwt);
-        dispatch('setUser', userInfo);
+        commit('user', userInfo);
       }
     },
   },

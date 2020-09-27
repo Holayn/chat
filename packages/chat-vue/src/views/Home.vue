@@ -28,7 +28,7 @@ export default class Home extends Vue {
     this.$store.dispatch('initialize');
   }
 
-  @Watch('hasUser')
+  @Watch('hasUser', {immediate: true})
   public async onHasUserUpdated(hasUser: boolean) {
     if (!hasUser) {
       return;

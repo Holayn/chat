@@ -174,7 +174,7 @@ export default class extends Vue {
     }
 
     const newSession = Session.createSession('regular', this.$store.getters.user.userId, [user]);
-    this.$store.dispatch('addSession', newSession);
+    this.$store.commit('addSession', newSession);
     this.selectSession(newSession);
     this.toggleUserSearch();
   }

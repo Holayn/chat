@@ -15,6 +15,8 @@ import { Component, Vue, Watch } from 'vue-property-decorator';
 import Toolbar from '../components/Toolbar.vue';
 import Loading from '../components/Loading.vue';
 
+import {Socket} from '../sockets';
+
 @Component({
   components: {
     Loading,
@@ -35,8 +37,12 @@ export default class Home extends Vue {
     }
 
     this.isConnecting = true;
-    await this.$store.dispatch('connect');
-    this.isConnecting = false;
+    try {
+      await Socket.connect();
+      this.isConnecting = false;
+    } catch {
+      alert('error connecting');
+    }
   }
 
   get hasUser() {

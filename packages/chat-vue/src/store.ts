@@ -1,13 +1,13 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
-import { IChat, ISession, Chat } from '@chat/shared';
+import { Chat, IChat, ISession } from '@chat/shared';
 
-import { getSessions } from './session';
 import { fetchChats } from './chat';
-import { mapMutations, mapGetters } from './store-mappers';
-import {userModule} from './store-modules/user';
+import { getSessions } from './session';
 import {Socket} from './sockets';
+import { mapGetters, mapMutations } from './store-mappers';
+import {userModule} from './store-modules/user';
 
 interface IFrontendChat extends IChat {
   sent?: boolean;
@@ -96,7 +96,7 @@ const store = new Vuex.Store({
       const chatToStore: IFrontendChat = {
         ...chat,
         sent: false,
-      }
+      };
       commit('addChat', {chat: chatToStore, session, sent: false});
       Socket.emit('chat', {chat, session}, () => {
         chatToStore.sent = true;

@@ -75,8 +75,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from 'vue-property-decorator';
 import { IChat, ISession, IUser, Session } from '@chat/shared';
+import { Component, Vue, Watch } from 'vue-property-decorator';
 
 import { API_URL } from '../shared';
 import { getUserByUsername } from '../user';
@@ -86,7 +86,7 @@ import Loading from '../components/Loading.vue';
 @Component({
   components: {
     Loading,
-  }
+  },
 })
 export default class extends Vue {
   private selectedSession: ISession = {} as ISession;
@@ -100,15 +100,15 @@ export default class extends Vue {
   private isLoadingChats: boolean = false;
   private isUserSearchOpen: boolean = false;
 
-  created() {
+  public created() {
     window.addEventListener('keyup', this.onEnterPressed);
   }
 
-  destroyed() {
+  public destroyed() {
     window.removeEventListener('keyup', this.onEnterPressed);
   }
 
-  async mounted() {
+  public async mounted() {
     this.isLoadingSessions = true;
     await this.$store.dispatch('getSessions');
     this.isLoadingSessions = false;
@@ -117,7 +117,7 @@ export default class extends Vue {
   }
 
   @Watch('isLoadingChats')
-  onIsLoadingChats(val: boolean, oldVal: boolean) {
+  private onIsLoadingChats(val: boolean, oldVal: boolean) {
     // When chats are loaded, scroll to the bottom
     if (!val && oldVal) {
       this.scrollToBottom();
@@ -125,7 +125,7 @@ export default class extends Vue {
   }
 
   @Watch('chats')
-  onChatsUpdated() {
+  private onChatsUpdated() {
     this.scrollToBottom();
   }
 

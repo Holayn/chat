@@ -4,12 +4,12 @@ import {API_URL} from '../shared';
 
 export async function get(path: string, auth: boolean = true) {
   if (!auth) {
-    const res = await fetch(`${API_URL}/${path}`);
-    if (res.headers.get('content-type')!.split(';')[0] === 'application/json') {
-      return res.json();
+    const noAuthRes = await fetch(`${API_URL}/${path}`);
+    if (noAuthRes.headers.get('content-type')!.split(';')[0] === 'application/json') {
+      return noAuthRes.json();
     }
 
-    return res;
+    return noAuthRes;
   }
   const res = await fetch(`${API_URL}/${path}`, {
     headers: {
@@ -29,7 +29,7 @@ export async function post(path: string, payload: Record<string, any>) {
   return await fetch(`${API_URL}/${path}`, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify(payload),
   });

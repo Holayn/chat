@@ -24,7 +24,7 @@ const router = new Router({
           name: 'messages',
           component: () => import(/* webpackChunkName: "messages" */ './views/Messages.vue'),
         },
-      ]
+      ],
     },
     {
       path: '*',

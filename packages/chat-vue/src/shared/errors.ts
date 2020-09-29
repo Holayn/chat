@@ -1,5 +1,5 @@
 export class RequestError {
-  code: number;
+  public code: number;
   constructor(code: number) {
     this.code = code;
   }

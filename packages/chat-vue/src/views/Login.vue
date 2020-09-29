@@ -35,11 +35,11 @@ export default class extends Vue {
   // State
   private isCreate = false;
 
-  created() {
+  public created() {
     window.addEventListener('keyup', this.onEnterPressed);
   }
 
-  destroyed() {
+  public destroyed() {
     window.removeEventListener('keyup', this.onEnterPressed);
   }
 

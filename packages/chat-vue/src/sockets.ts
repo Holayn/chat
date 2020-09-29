@@ -1,14 +1,13 @@
-import {default as io} from 'socket.io-client';
+import {default as io, Socket as SocketIo} from 'socket.io-client';
 
 import { IChat, ISession } from '@chat/shared';
 
-import store from './store';
-import {getToken} from './utils/auth';
 import router from './router';
 import {API_URL} from './shared';
+import store from './store';
+import {getToken} from './utils/auth';
 
 export class Socket {
-  private static socket: any = null;
   public static async connect() {
     const token = getToken();
     if (!token) {
@@ -61,13 +60,13 @@ export class Socket {
     this.socket.disconnect();
   }
 
-    /**
+  /**
    * Attaches necessary properties to socket emit payloads
    * @param event
    * @param payload
    * @param cb
    */
-  public static async emit(event: string, payload: Record<string, any>, cb?: Function) {
+  public static async emit(event: string, payload: Record<string, any>, cb?: () => void) {
     if (!this.socket) {
       await this.connect();
     }
@@ -77,4 +76,5 @@ export class Socket {
       token: getToken(),
     }, cb);
   }
+  private static socket: typeof SocketIo;
 }

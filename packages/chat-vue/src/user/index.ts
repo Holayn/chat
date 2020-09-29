@@ -1,7 +1,7 @@
 import {IUser} from '@chat/shared';
 
-import {get, post} from '../utils/fetch';
 import {RequestError} from '../shared/errors';
+import {get, post} from '../utils/fetch';
 
 export async function getUserByUsername(username: string): Promise<IUser | null> {
   if (!username) {

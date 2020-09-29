@@ -12,8 +12,8 @@
 
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
-import Toolbar from '../components/Toolbar.vue';
 import Loading from '../components/Loading.vue';
+import Toolbar from '../components/Toolbar.vue';
 
 import {Socket} from '../sockets';
 
@@ -21,12 +21,12 @@ import {Socket} from '../sockets';
   components: {
     Loading,
     Toolbar,
-  }
+  },
 })
 export default class Home extends Vue {
   private isConnecting: boolean = false;
 
-  created() {
+  public created() {
     this.$store.dispatch('initialize');
   }
 

@@ -2,10 +2,10 @@ import {IUser} from '@chat/shared';
 import Cookies from 'js-cookie';
 import decode from 'jwt-decode';
 
-import { createAccount, login } from '../user';
-import { mapGetters, mapMutations } from '../store-mappers';
-import router from '../router';
 import { Socket } from '@/sockets';
+import router from '../router';
+import { mapGetters, mapMutations } from '../store-mappers';
+import { createAccount, login } from '../user';
 
 interface IUserState {
   user: IUser;
@@ -47,7 +47,13 @@ export const userModule = {
       router.push({name: 'login'});
       Socket.disconnect();
     },
-    async createAccount({}, {username, password, email, name}: {username: string, password: string, email: string, name: string}) {
+    async createAccount(
+      {},
+      {username, password, email, name}: {
+        username: string,
+        password: string,
+        email: string,
+        name: string}) {
       return await createAccount(username, password, email, name);
     },
     initializeUserInfo({commit}: any) {

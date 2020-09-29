@@ -1,5 +1,9 @@
 {
   "private": true,
+  "engines": {
+    "yarn": "1.x",
+    "node": "^10.x"
+  },
   "workspaces": [
     "packages/*"
   ],

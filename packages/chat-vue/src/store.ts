@@ -1,12 +1,12 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
-import { Chat, IChat, ISession } from '@chat/shared';
+import {Chat, IChat, ISession} from '@chat/shared';
 
-import { fetchChats } from './chat';
-import { getSessions } from './session';
+import {getChats} from './chat';
+import {getSessions} from './session';
 import {Socket} from './sockets';
-import { mapGetters, mapMutations } from './store-mappers';
+import {mapGetters, mapMutations} from './store-mappers';
 import {userModule} from './store-modules/user';
 
 interface IFrontendChat extends IChat {
@@ -82,7 +82,7 @@ const store = new Vuex.Store({
     async getChats({commit, state}, session: ISession) {
       if (!state.chats[session.sessionId].fetched) {
         commit('chats', {
-          chats: [...await fetchChats(session.sessionId), ...state.chats[session.sessionId].chats],
+          chats: [...await getChats(session.sessionId), ...state.chats[session.sessionId].chats],
           session,
         });
       }

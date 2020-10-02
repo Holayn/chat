@@ -18,6 +18,10 @@ router.get('/', async (req: any, res: express.Response) => {
       string,
       string
     >;
+    if (!user) {
+      res.sendStatus(401);
+      return;
+    }
     const isMatch = await bcrypt.compare(req.query.pass, user.pass as string);
     if (isMatch) {
       const jwt = createJwt(user);

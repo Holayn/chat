@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import {Component, Vue} from 'vue-property-decorator';
 import {RequestError} from '../shared/errors';
 
 @Component({})
@@ -86,7 +86,7 @@ export default class extends Vue {
       password: this.password,
     });
 
-    if (!login) {
+    if (login instanceof RequestError) {
       alert('login failed');
     }
   }

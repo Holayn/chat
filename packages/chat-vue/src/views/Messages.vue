@@ -75,11 +75,11 @@
 </template>
 
 <script lang="ts">
-import { IChat, ISession, IUser, Session } from '@chat/shared';
-import { Component, Vue, Watch } from 'vue-property-decorator';
+import {IChat, ISession, IUser, Session} from '@chat/shared';
+import {Component, Vue, Watch} from 'vue-property-decorator';
 
-import { API_URL } from '../shared';
-import { getUserByUsername } from '../user';
+import {API_URL} from '../shared';
+import {getUserByUsername} from '../user';
 
 import Loading from '../components/Loading.vue';
 
@@ -229,8 +229,6 @@ export default class extends Vue {
       session: this.selectedSession,
     });
     this.message = '';
-
-    this.scrollToBottom();
   }
 
   private onEnterPressed(key: KeyboardEvent) {

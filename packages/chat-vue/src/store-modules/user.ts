@@ -1,11 +1,12 @@
 import {IUser} from '@chat/shared';
 import Cookies from 'js-cookie';
 import decode from 'jwt-decode';
+import {ActionContext} from 'vuex';
 
-import { Socket } from '@/sockets';
+import {Socket} from '@/sockets';
 import router from '../router';
-import { mapGetters, mapMutations } from '../store-mappers';
-import { createAccount, login } from '../user';
+import {mapGetters, mapMutations} from '../store-mappers';
+import {createAccount, login} from '../user';
 
 interface IUserState {
   user: IUser;
@@ -27,10 +28,10 @@ export const userModule = {
     },
   },
   actions: {
-    setUser({commit}: any, userInfo: IUser) {
+    setUser({commit}: ActionContext<any, any>, userInfo: IUser) {
       commit('user', userInfo);
     },
-    async login({commit}: any, {username, password}: {username: string, password: string}) {
+    async login({commit}: ActionContext<any, any>, {username, password}: {username: string, password: string}) {
       const jwt = await login(username, password);
       if (jwt) {
         Cookies.set('token', jwt);
@@ -41,7 +42,7 @@ export const userModule = {
       }
       return false;
     },
-    logout({commit}: any) {
+    logout({commit}: ActionContext<any, any>) {
       Cookies.remove('token');
       commit('user', {});
       router.push({name: 'login'});
@@ -56,7 +57,7 @@ export const userModule = {
         name: string}) {
       return await createAccount(username, password, email, name);
     },
-    initializeUserInfo({commit}: any) {
+    initializeUserInfo({commit}: ActionContext<any, any>) {
       const jwt = Cookies.get('token');
       if (jwt) {
         const userInfo = decode<IUser>(jwt);

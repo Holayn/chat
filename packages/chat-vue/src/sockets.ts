@@ -1,6 +1,6 @@
 import {default as io, Socket as SocketIo} from 'socket.io-client';
 
-import { IChat, ISession } from '@chat/shared';
+import {IChat, ISession} from '@chat/shared';
 
 import router from './router';
 import {API_URL} from './shared';
@@ -8,6 +8,8 @@ import store from './store';
 import {getToken} from './utils/auth';
 
 export class Socket {
+  private static socket: typeof SocketIo;
+
   public static async connect() {
     const token = getToken();
     if (!token) {
@@ -76,5 +78,4 @@ export class Socket {
       token: getToken(),
     }, cb);
   }
-  private static socket: typeof SocketIo;
 }

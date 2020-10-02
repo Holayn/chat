@@ -2,7 +2,7 @@ import Cookies from 'js-cookie';
 
 import {get} from './fetch';
 
-export function getToken(): string | null {
+export function getToken() {
   const token = Cookies.get('token');
 
   if (!token) {
@@ -18,7 +18,7 @@ export async function isAuthorized() {
   }
 
   try {
-    const res = await get('login/verify');
+    const res = await get<Response>('login/verify');
     if (res.status !== 200) {
       return false;
     }

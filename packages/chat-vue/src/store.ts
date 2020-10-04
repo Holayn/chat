@@ -102,11 +102,13 @@ const store = new Vuex.Store({
         chatToStore.sent = true;
       });
     },
-    async readChats({commit}, session: ISession) {
+    async readChats({commit, getters}, session: ISession) {
       if (session.read) {
         return;
       }
-      Socket.emit('readChat', {session});
+      const sessionId = session.sessionId;
+      const userId = getters.user.userId;
+      Socket.emit('readChat', {sessionId, userId});
       commit('markSessionAsRead', session.sessionId);
     },
     async initialize({dispatch}) {

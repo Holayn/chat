@@ -76,9 +76,9 @@ export function sockets(io: socketIO.Server) {
       }
     );
 
-    socket.on('readChat', async ({ session }: { session: ISession }) => {
-      if (await sessionExists(session.sessionId)) {
-        await updateSession(session.sessionId, session.userId, {
+    socket.on('readChat', async ({ sessionId, userId }: { sessionId: string, userId: string }) => {
+      if (await sessionExists(sessionId)) {
+        await updateSession(sessionId, userId, {
           read: true
         });
       }

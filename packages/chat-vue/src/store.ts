@@ -32,9 +32,9 @@ const store = new Vuex.Store({
     ...mapMutations(['user', 'sessions']),
     addChat: (state, {
       chat,
-      session,
-    }: {chat: IFrontendChat, session: ISession}) => {
-      state.chats[session.sessionId].chats.push(chat);
+      sessionId,
+    }: {chat: IFrontendChat, sessionId: string}) => {
+      state.chats[sessionId].chats.push(chat);
     },
     addSession: (state, session) => {
       state.sessions.push(session);
@@ -97,7 +97,7 @@ const store = new Vuex.Store({
         ...chat,
         sent: false,
       };
-      commit('addChat', {chat: chatToStore, session, sent: false});
+      commit('addChat', {chat: chatToStore, sessionId: session.sessionId, sent: false});
       Socket.emit('chat', {chat, session}, () => {
         chatToStore.sent = true;
       });

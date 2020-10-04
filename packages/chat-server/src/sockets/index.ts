@@ -1,12 +1,11 @@
 import { default as socketIO, Socket } from 'socket.io';
-import { IChat, ISession, Session, ServerSocketError } from '@chat/shared';
+import { IChat, ISession, ServerSocketError } from '@chat/shared';
 
 // operations
 import { newChat } from '../shared/chat';
 import {
   sessionExists,
   newSessions,
-  fetchSessionUsers,
   updateSession
 } from '../shared/session';
 import { verifyJwt } from '../utils/jwt';
@@ -62,18 +61,9 @@ export function sockets(io: socketIO.Server) {
         const otherUserId = session.users[0].userId;
         const otherUserSocket = connectedUsers[otherUserId];
         if (otherUserSocket) {
-          // send the session that belongs to that user
-          // TODO: improve the logic here - this fetch isn't necessary
-          const users = await fetchSessionUsers(session.sessionId, userId);
           otherUserSocket.emit('chat', {
             chat,
-            session: new Session(
-              session.sessionId,
-              session.type,
-              otherUserId,
-              users,
-              false
-            )
+            sessionId: session.sessionId,
           });
 
           // the session is now unread for the user being sent a message

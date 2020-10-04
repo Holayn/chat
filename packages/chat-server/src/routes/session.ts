@@ -1,6 +1,6 @@
 import express from 'express';
 import { Session } from '@chat/shared';
-import { usersHaveSession, newSessions } from '../shared/session';
+import { fetchSessions, getOtherUsersInSession, usersHaveSession, newSessions } from '../shared/session';
 import { validateJwtMiddleware } from '../utils/jwt';
 
 const router = express.Router();
@@ -40,5 +40,21 @@ router.post(
     }
   }
 );
+
+router.get('/session', validateJwtMiddleware(), async (req: any, res: express.Response) => {
+  if (!req.query.session_id) {
+    res.sendStatus(400);
+    return;
+  }
+  try {
+    const sessions = await fetchSessions(req.query.session_id);
+    const users = await getOtherUsersInSession(sessions, req.user.userId);
+
+    res.send(new Session(req.query.session_id, 'regular', req.user.userId, users, false));
+  } catch (e) {
+    console.error(e);
+    res.sendStatus(500);
+  }
+});
 
 export default router;

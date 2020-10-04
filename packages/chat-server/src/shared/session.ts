@@ -42,7 +42,7 @@ export async function getUserSessions(userId: string): Promise<Session[]> {
   }
 }
 
-export async function fetchSessionUsers(sessionId: string, userId: string) {
+export async function fetchSessions(sessionId: string) {
   const paramsAllSessionEntries = {
     TableName: 'session',
     KeyConditionExpression: '#s = :s',
@@ -53,15 +53,21 @@ export async function fetchSessionUsers(sessionId: string, userId: string) {
       '#s': 'session-id'
     }
   };
-  const allSessions = (await query(paramsAllSessionEntries)) ?? [];
-  return Promise.all(
-    allSessions.reduce((acc, session) => {
-      if (session['user-id'] !== userId) {
-        acc.push(getUser(session['user-id'] as string));
-      }
-      return acc;
-    }, [] as Promise<IUser>[])
-  );
+  return await query(paramsAllSessionEntries) ?? [];
+}
+
+export function getOtherUsersInSession(sessions: any[], userId: string): Promise<IUser[]> {
+  return Promise.all(sessions.reduce((acc, session) => {
+    if (session['user-id'] !== userId) {
+      acc.push(getUser(session['user-id'] as string));
+    }
+    return acc;
+  }, [] as Promise<IUser>[]));
+}
+
+export async function fetchSessionUsers(sessionId: string, userId: string) {
+  const allSessions = await fetchSessions(sessionId);
+  return getOtherUsersInSession(allSessions, userId);
 }
 
 export async function getUserIdsInSession(

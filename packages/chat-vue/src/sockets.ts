@@ -1,11 +1,12 @@
 import {default as io, Socket as SocketIo} from 'socket.io-client';
 
-import {IChat, ISession} from '@chat/shared';
+import {IChat} from '@chat/shared';
 
 import router from './router';
 import {API_URL} from './shared';
 import store from './store';
 import {getToken} from './utils/auth';
+import {getSession} from './session';
 
 export class Socket {
   private static socket: typeof SocketIo;
@@ -25,18 +26,19 @@ export class Socket {
         resolve();
       });
 
-      this.socket.on('chat', (payload: {
+      this.socket.on('chat', async (payload: {
         chat: IChat,
-        session: ISession,
+        sessionId: string,
       }) => {
-        const chats = store.getters.chats[payload.session.sessionId];
-        // New session handling
+        const chats = store.getters.chats[payload.sessionId];
         if (!chats) {
-          store.commit('addSession', payload.session);
-          // do not add chat, since it's a new session and we're going to be fetching the chats
+          // New session handling
+          const fetchedSession = await getSession(payload.sessionId);
+          store.commit('addSession', fetchedSession);
+          // do not add chat, since it's a new seession and we're going to be fetching the chats
           return;
         } else {
-          store.commit('markSessionAsUnread', payload.session.sessionId);
+          store.commit('markSessionAsUnread', payload.sessionId);
           if (!chats.fetched) {
             return;
           }

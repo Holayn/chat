@@ -1,7 +1,7 @@
 import { User } from '@chat/shared';
 import get from '../db/get';
 
-export async function getUser(userId: string): Promise<User> {
+export async function getUser(userId: string) {
   const params = {
     TableName: 'user',
     Key: {

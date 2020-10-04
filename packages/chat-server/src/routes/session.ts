@@ -1,6 +1,6 @@
 import express from 'express';
 import { Session } from '@chat/shared';
-import { checkIfSessionsExist, newSessions } from '../shared/session';
+import { usersHaveSession, newSessions } from '../shared/session';
 import { validateJwtMiddleware } from '../utils/jwt';
 
 const router = express.Router();
@@ -21,7 +21,7 @@ router.post(
     }
     try {
       if (
-        !(await checkIfSessionsExist(req.query.user_id_1, req.query.user_id_2))
+        await usersHaveSession(req.query.user_id_1, req.query.user_id_2)
       ) {
         res.statusMessage = `Session with ${req.query.user_id_2} already exists`;
         res.sendStatus(403);

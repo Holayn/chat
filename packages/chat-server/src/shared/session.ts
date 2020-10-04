@@ -120,21 +120,17 @@ function newSessionParams(sessionId: string, user: string) {
   };
 }
 
-export async function checkIfSessionsExist(
+export async function usersHaveSession(
   userId: string,
   otherUserId: string
 ) {
   if (!userId || !otherUserId) {
     throw new Error('validation failed');
   }
-  try {
-    const sessions = await getUserSessions(userId);
-    return sessions.every(session => {
-      return session.users[0].userId !== otherUserId;
-    });
-  } catch (e) {
-    throw new Error(e);
-  }
+  const sessions = await getUserSessions(userId);
+  return !sessions.every(session => {
+    return session.users[0].userId !== otherUserId;
+  });
 }
 
 export async function updateSession(

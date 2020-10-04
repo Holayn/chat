@@ -42,7 +42,6 @@ export function sockets(io: socketIO.Server) {
     connectedSockets[socket.id] = userId;
     connectedUsers[userId] = socket;
 
-    // TODO: secure this
     socket.on(
       'chat',
       async (

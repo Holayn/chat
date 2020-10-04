@@ -74,7 +74,7 @@ router.post('/new', validateJwtMiddleware(), async (req: any, res: any) => {
       req.query.userId
     );
     await newChat(chat);
-    res.send('success');
+    res.sendStatus(200);
   } catch (e) {
     console.error(e);
     res.sendStatus(500);

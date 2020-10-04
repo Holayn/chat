@@ -60,7 +60,7 @@ export function sockets(io: socketIO.Server) {
         await newChat(chat);
         // send to connected user if they are connected
         const otherUserId = session.users[0].userId;
-        const otherUserSocket = connectedUsers[userId];
+        const otherUserSocket = connectedUsers[otherUserId];
         if (otherUserSocket) {
           // send the session that belongs to that user
           // TODO: improve the logic here - this fetch isn't necessary

@@ -36,7 +36,7 @@ export class Socket {
           // do not add chat, since it's a new session and we're going to be fetching the chats
           return;
         } else {
-          store.dispatch('markSessionAsUnread', payload.session.sessionId);
+          store.commit('markSessionAsUnread', payload.session.sessionId);
           if (!chats.fetched) {
             return;
           }

@@ -8,6 +8,10 @@ import { validateJwtMiddleware } from '../utils/jwt';
 
 const router = express.Router();
 
+/**
+ * @description gets all chats in a session
+ * @param session_id
+ */
 router.get('/', validateJwtMiddleware(), async (req: any, res: any) => {
   if (!req.query.session_id) {
     res.sendStatus(400);
@@ -51,13 +55,14 @@ router.get('/', validateJwtMiddleware(), async (req: any, res: any) => {
   }
 });
 
+/**
+ * @description creates a new chat message
+ * @param session_id
+ * @param message
+ */
 router.post('/new', validateJwtMiddleware(), async (req: any, res: any) => {
-  if (!req.query.session_id || !req.query.message || !req.query.userId) {
+  if (!req.query.session_id || !req.query.message) {
     res.sendStatus(400);
-    return;
-  }
-  if (req.query.userId !== req.user.userId) {
-    res.sendStatus(403);
     return;
   }
   // only allow users to add chat to a session they're in
@@ -71,7 +76,7 @@ router.post('/new', validateJwtMiddleware(), async (req: any, res: any) => {
     const chat = Chat.createChat(
       req.query.session_id,
       req.query.message,
-      req.query.userId
+      req.user.userId
     );
     await newChat(chat);
     res.sendStatus(200);

@@ -13,11 +13,11 @@ import { validateJwtMiddleware } from '../utils/jwt';
 
 const router = express.Router();
 
+/**
+ * @description returns requesting user information via the User object
+ * @param user_id the user id of the user to get information of
+ */
 router.get('/', validateJwtMiddleware(), async (req: any, res: any) => {
-  if (req.user.userId !== req.query.user_id) {
-    res.sendStatus(403);
-    return;
-  }
   try {
     res.send(await getUser(req.query.user_id));
   } catch (e) {
@@ -26,19 +26,22 @@ router.get('/', validateJwtMiddleware(), async (req: any, res: any) => {
   }
 });
 
+/**
+ * @description returns sessions that belong to the requesting user
+ */
 router.get('/sessions', validateJwtMiddleware(), async (req: any, res: any) => {
-  if (req.user.userId !== req.query.user_id) {
-    res.sendStatus(403);
-    return;
-  }
   try {
-    res.send(await getUserSessions(req.query.user_id));
+    res.send(await getUserSessions(req.user.userId));
   } catch (e) {
     console.error(e);
     res.sendStatus(500);
   }
 });
 
+/**
+ * @description returns user information via the User object that belongs to a username
+ * @param username
+ */
 router.get(
   '/findByUsername',
   validateJwtMiddleware(),
@@ -81,6 +84,13 @@ router.get(
   }
 );
 
+/**
+ * @description creates a new entry in the database User table
+ * @param username
+ * @param password
+ * @param email
+ * @param name
+ */
 router.post('/createAccount', async (req: any, res: any) => {
   if (
     !req.body.username ||

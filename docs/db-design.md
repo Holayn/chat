@@ -1,53 +1,54 @@
 best practices: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/bp-general-nosql-design.html
 
+An item in the `chat` table represents a message a user has sent.
+- Every item or "chat" has an associated session it belongs to (denoted by its `session-id`), and who the item was sent by (denoted by its `user-id`)
+  - Supports getting all chats in a session, and knowing who sent what chat
+
+An item in the `sessions` table contains a session id and a user id.
+  - Supports getting all sessions a user has
+  - Supports getting all users in a session
+  - Supports multiple users in a session, since there can be multiple items with the same session id.
+
 ## use cases to support:
 - get all chat messages for a session
-  - this is supported by chat table having a partition & sort key
-  - can take advantage of BatchGetItem
+  - db operation: query against chat table using the session-id
 - get all sessions for a user
-  - can use secondary index
-  - search chat table for a user, return all entries that have match in sender or 
-- get a user's name
-- start a chat with a user
-  - for each user create a new item in session table of type regular using same session id
-- send a message to a user
-  - add item to chat table
-- delete a message in a chat
-  - remove item from chat table
+  - db operation: query against session table's user-id index
+  - search chat table for a user, return all entries that have match in sender
+- start a chat between users
+  - create a new session id, and for every user, create a new item in the session table using that session id
 - delete a chat with a user
   - delete entry containing session-id & user-id from session table
   - if no session table no longer contains session-id, delete entries from chat table
-- create a group chat
-  - for each user, create a new item in session table of type group using same session id
-- send a message to a group chat
-  - add item to chat table
-- delete a message from a group chat
-  - remove item from chat table
-- delete a group chat
-  - delete entry containing session-id & user-id from session table
-  - if no session table no longer contains session-id, delete entries from chat table
-- support sticker
+- support stickers
   - add a new item in chat table with type "sticker"
 
 
 ### user table
-- user-id (primary key)
-- name
-- username
-- password
+- properties
+  - user-id (primary key)
+  - name
+  - username
+  - password
+- indexes
+  - user-id
 
 ### chat table
-- session-id (primary key)
-- chat-id
-- user-id of sender
-- message
-- timestamp (primary sort key)
-- type "text" "sticker" "image"
+- properties
+  - session-id (primary key)
+  - chat-id
+  - user-id of sender
+  - message
+  - timestamp (primary sort key)
+  - type "text" "sticker" "image"
 
 ### session table
-- session-id (primary key)
-- user-id (primary sort key)
-- type "group" or "regular"
+- properties
+  - session-id (primary key)
+  - user-id (primary sort key)
+  - type "group" or "regular"
+- indexes
+  - user-id
 
 
 ## example items:

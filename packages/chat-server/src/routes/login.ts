@@ -9,6 +9,11 @@ dotenv.config();
 
 const router = express.Router();
 
+/**
+ * @description returns a jwt for valid credentials
+ * @param username
+ * @param pass
+ */
 router.get('/', async (req: any, res: express.Response) => {
   if (!req.query.username || !req.query.pass) {
     res.sendStatus(400);
@@ -38,6 +43,9 @@ router.get('/', async (req: any, res: express.Response) => {
   }
 });
 
+/**
+ * @description verifies valid jwt
+ */
 router.get('/verify', validateJwtMiddleware(), async (req: any, res: any) => {
   res.sendStatus(200);
 });

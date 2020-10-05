@@ -5,33 +5,32 @@ import { validateJwtMiddleware } from '../utils/jwt';
 
 const router = express.Router();
 
-// user_id_1 should be the user id of the client making the request
+/**
+ * @description creates a new session between two users
+ * @param user_id the other user id
+ */
 router.post(
   '/new',
   validateJwtMiddleware(),
   async (req: any, res: express.Response) => {
-    if (!req.query.user_id_1 || !req.query.user_id_2) {
+    if (!req.query.user_id) {
       res.sendStatus(400);
       return;
     }
-    // only allow users to create new sessions between themself and another user
-    if (!req.user.userId !== req.query.user_id_1) {
-      res.sendStatus(403);
-      return;
-    }
+
     try {
       if (
-        await usersHaveSession(req.query.user_id_1, req.query.user_id_2)
+        await usersHaveSession(req.user.userId, req.query.user_id)
       ) {
-        res.statusMessage = `Session with ${req.query.user_id_2} already exists`;
+        res.statusMessage = `Session with ${req.query.user_id} already exists`;
         res.sendStatus(403);
         return;
       }
-      const session = Session.createSession('regular', req.query.user_id_1, []);
+      const session = Session.createSession('regular', req.user.userId, []);
       await newSessions(
         session.sessionId,
-        req.query.user_id_1,
-        req.query.user_id_2
+        req.user.userId,
+        req.query.user_id,
       );
       res.send(session);
     } catch (e) {
@@ -41,6 +40,10 @@ router.post(
   }
 );
 
+/**
+ * @description returns the session
+ * @param session_id
+ */
 router.get('/session', validateJwtMiddleware(), async (req: any, res: express.Response) => {
   if (!req.query.session_id) {
     res.sendStatus(400);

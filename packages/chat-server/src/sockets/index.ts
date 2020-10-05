@@ -1,7 +1,6 @@
 import { default as socketIO, Socket } from 'socket.io';
 import { IChat, ISession, ServerSocketError } from '@chat/shared';
 
-// operations
 import { newChat } from '../shared/chat';
 import {
   sessionExists,
@@ -48,6 +47,7 @@ export function sockets(io: socketIO.Server) {
         ack: () => void
       ) => {
         // check if session exists in database, create new sessions if not
+        // TODO: cache this
         if (!(await sessionExists(session.sessionId))) {
           await newSessions(
             session.sessionId,
